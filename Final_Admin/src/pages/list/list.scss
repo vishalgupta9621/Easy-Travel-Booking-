@@ -1,0 +1,40 @@
+.list {
+  display: flex;
+  width: 100%;
+  .listContainer {
+    flex: 6;
+  }
+
+  .listTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    color: gray;
+    font-size: 20px;
+    font-weight: 500;
+
+    .createButton {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background-color: #6439ff;
+      color: white;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background-color: #4f2fd1;
+        transform: translateY(-1px);
+      }
+
+      .MuiSvgIcon-root {
+        font-size: 20px;
+      }
+    }
+  }
+}

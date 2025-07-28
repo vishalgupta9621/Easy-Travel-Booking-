@@ -1,0 +1,379 @@
+.payment-gateway {
+  max-width: 500px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.payment-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+.payment-header h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.amount-display {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1rem 2rem;
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+}
+
+.amount {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+/* Payment Forms */
+.card-payment-form,
+.upi-payment-form,
+.netbanking-payment-form,
+.wallet-payment-form {
+  padding: 2rem;
+}
+
+.card-payment-form h3,
+.upi-payment-form h3,
+.netbanking-payment-form h3,
+.wallet-payment-form h3 {
+  margin: 0 0 1.5rem 0;
+  color: #333;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  background: white;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* UPI Specific */
+.upi-apps {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.upi-apps p {
+  margin: 0 0 0.75rem 0;
+  font-weight: 600;
+  color: #333;
+}
+
+.upi-app-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.upi-app-icons span {
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  border: 1px solid #e1e5e9;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upi-app-icons span:hover {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+/* Wallet Specific */
+.wallet-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wallet-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.wallet-option:hover {
+  border-color: #667eea;
+  background: #f0f4ff;
+}
+
+.wallet-option span:first-child {
+  font-weight: 600;
+  color: #333;
+}
+
+.wallet-option span:last-child {
+  color: #28a745;
+  font-weight: 600;
+}
+
+/* Payment Actions */
+.payment-actions {
+  display: flex;
+  gap: 1rem;
+  padding: 0 2rem 2rem;
+}
+
+.cancel-btn,
+.pay-btn {
+  flex: 1;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.cancel-btn {
+  background: #f8f9fa;
+  color: #666;
+  border: 2px solid #e1e5e9;
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.pay-btn {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+}
+
+.pay-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+}
+
+.pay-btn:disabled,
+.cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Loading Spinner */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Security Info */
+.security-info {
+  background: #f8f9fa;
+  padding: 1.5rem 2rem;
+  text-align: center;
+  border-top: 1px solid #e1e5e9;
+}
+
+.security-info p {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Card Number Formatting */
+.form-group input[placeholder*="1234"] {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .payment-gateway {
+    margin: 1rem;
+    max-width: none;
+  }
+  
+  .payment-header {
+    padding: 1.5rem;
+  }
+  
+  .payment-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .amount {
+    font-size: 1.8rem;
+  }
+  
+  .card-payment-form,
+  .upi-payment-form,
+  .netbanking-payment-form,
+  .wallet-payment-form {
+    padding: 1.5rem;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .payment-actions {
+    flex-direction: column;
+    padding: 0 1.5rem 1.5rem;
+  }
+  
+  .upi-app-icons {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .payment-header {
+    padding: 1rem;
+  }
+  
+  .card-payment-form,
+  .upi-payment-form,
+  .netbanking-payment-form,
+  .wallet-payment-form {
+    padding: 1rem;
+  }
+  
+  .payment-actions {
+    padding: 0 1rem 1rem;
+  }
+  
+  .security-info {
+    padding: 1rem;
+  }
+  
+  .security-info p {
+    font-size: 0.8rem;
+  }
+}
+
+/* Animation for form appearance */
+.card-payment-form,
+.upi-payment-form,
+.netbanking-payment-form,
+.wallet-payment-form {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus states for better accessibility */
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Error states */
+.form-group.error input,
+.form-group.error select {
+  border-color: #dc3545;
+}
+
+.form-group.error input:focus,
+.form-group.error select:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+/* Success states */
+.form-group.success input,
+.form-group.success select {
+  border-color: #28a745;
+}
+
+/* Card type detection */
+.card-type-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+}
+
+/* Secure badge */
+.secure-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #28a745;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}

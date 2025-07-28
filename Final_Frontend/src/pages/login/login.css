@@ -1,0 +1,65 @@
+.loginform {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f4f4;
+}
+
+.lContainer {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.lInput {
+  width: 93%;
+  padding: 12px 15px;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.lButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.lButton:disabled {
+  background-color: #7aaee3;
+  cursor: not-allowed;
+}
+
+.lButton:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+span {
+  color: red;
+  display: block;
+  margin-top: 10px;
+  text-align: center;
+}
+
+@media screen and (max-width: 480px) {
+  .lContainer {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .lInput,
+  .lButton {
+    font-size: 14px;
+  }
+}
