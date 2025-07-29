@@ -1,0 +1,249 @@
+.user-account {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  min-height: 100vh;
+}
+
+.account-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 40px;
+  border-radius: 15px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.account-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.user-info h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.user-info p {
+  opacity: 0.9;
+  font-size: 1.1rem;
+}
+
+.account-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.tab {
+  padding: 15px 25px;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  color: #667eea;
+}
+
+.tab.active {
+  color: #667eea;
+  border-bottom-color: #667eea;
+}
+
+.account-content {
+  padding: 20px 0;
+}
+
+.bookings-section h3,
+.payments-section h3 {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 15px;
+}
+
+.no-data p {
+  font-size: 1.1rem;
+}
+
+.bookings-list,
+.payments-list {
+  display: grid;
+  gap: 20px;
+}
+
+.booking-card,
+.payment-card {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.booking-card:hover,
+.payment-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.booking-header,
+.payment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.booking-header h4,
+.payment-header h4 {
+  color: #2c3e50;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status.confirmed,
+.status.success {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status.cancelled,
+.status.failed {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.booking-details,
+.payment-details {
+  display: grid;
+  gap: 12px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.detail-row span:first-child {
+  color: #666;
+  font-weight: 500;
+}
+
+.detail-row span:last-child {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.not-logged-in,
+.loading {
+  text-align: center;
+  padding: 100px 20px;
+  color: #666;
+}
+
+.not-logged-in h2 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.loading {
+  font-size: 1.2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .user-account {
+    padding: 15px;
+  }
+  
+  .account-header {
+    padding: 30px 20px;
+  }
+  
+  .account-header h1 {
+    font-size: 2rem;
+  }
+  
+  .account-tabs {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .tab {
+    padding: 12px 20px;
+    border-bottom: 1px solid #e9ecef;
+    border-radius: 0;
+  }
+  
+  .tab.active {
+    background: #f8f9fa;
+    border-bottom-color: #667eea;
+  }
+  
+  .booking-card,
+  .payment-card {
+    padding: 20px;
+  }
+  
+  .booking-header,
+  .payment-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .account-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .user-info h2 {
+    font-size: 1.2rem;
+  }
+  
+  .booking-card,
+  .payment-card {
+    padding: 15px;
+  }
+  
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+}

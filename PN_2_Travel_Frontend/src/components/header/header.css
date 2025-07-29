@@ -1,0 +1,77 @@
+/* Modern Header Styles */
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 0;
+  position: relative;
+  min-height: 300px;
+}
+
+.headerContainer {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.headerContent {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.headerTitle {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  line-height: 1.2;
+}
+
+.headerSubtitle {
+  font-size: 1.3rem;
+  font-weight: 300;
+  opacity: 0.9;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header {
+    padding: 60px 0;
+    min-height: 250px;
+  }
+
+  .headerTitle {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+  }
+
+  .headerSubtitle {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 40px 0;
+    min-height: 200px;
+  }
+
+  .headerContainer {
+    padding: 0 15px;
+  }
+
+  .headerTitle {
+    font-size: 2rem;
+    margin-bottom: 10px;
+  }
+
+  .headerSubtitle {
+    font-size: 1rem;
+  }
+}

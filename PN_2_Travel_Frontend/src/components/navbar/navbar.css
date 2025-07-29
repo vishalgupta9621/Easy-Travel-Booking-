@@ -1,0 +1,116 @@
+/* navbar.css */
+.navbar {
+  height: 80px;
+  background-color: #003580;
+  display: flex;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navContainer {
+  width: 100%;
+  max-width: 1024px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.logoMain {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+}
+
+.logoSub {
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  font-family: 'Roboto', sans-serif;
+  text-transform: uppercase;
+  opacity: 0.9;
+  margin-top: 2px;
+}
+
+.navItems {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.navButton {
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.navButton.register {
+  background-color: transparent;
+  color: white;
+  border: 1px solid white;
+}
+
+.navButton.register:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navButton.login {
+  background-color: #ffffff;
+  color: #003580;
+}
+
+.navButton.login:hover {
+  background-color: #f0f0f0;
+}
+
+.navButton.logout {
+  background-color: #ff4757;
+  color: white;
+}
+
+.navButton.logout:hover {
+  background-color: #ff3742;
+}
+
+.welcomeText {
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+/* Ensure Link elements don't affect button layout */
+.navItems a {
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .logoMain {
+    font-size: 20px;
+  }
+  
+  .logoSub {
+    font-size: 12px;
+  }
+  
+  .navButton {
+    padding: 8px 15px;
+    font-size: 14px;
+  }
+}

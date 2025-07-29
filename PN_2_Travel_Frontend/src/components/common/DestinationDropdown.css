@@ -1,0 +1,150 @@
+.destination-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-container {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: white;
+  cursor: text;
+  transition: all 0.2s ease;
+}
+
+.dropdown-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.dropdown-input:hover {
+  border-color: #bbb;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f1f1;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item.selected {
+  background-color: #e7f3ff;
+  color: #007bff;
+  border-left: 3px solid #007bff;
+  font-weight: 600;
+}
+
+.dropdown-item.loading {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  cursor: default;
+}
+
+.dropdown-item.loading:hover {
+  background-color: transparent;
+}
+
+.dropdown-item.no-results {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  cursor: default;
+}
+
+.dropdown-item.no-results:hover {
+  background-color: transparent;
+}
+
+.destination-info {
+  display: flex;
+  align-items: center;
+}
+
+.destination-info .city {
+  font-weight: 600;
+  color: #333;
+}
+
+.destination-info .separator {
+  color: #666;
+  margin: 0 4px;
+}
+
+.destination-info .name {
+  color: #555;
+  flex: 1;
+}
+
+.destination-info .code {
+  color: #888;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .dropdown-input {
+    padding: 10px 12px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .dropdown-item {
+    padding: 10px 12px;
+  }
+  
+  .dropdown-menu {
+    max-height: 180px;
+  }
+}
+
+/* Loading animation */
+.dropdown-item.loading::after {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 8px;
+  border: 2px solid #ddd;
+  border-top: 2px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Booking API</title>
+</head>
+<body>
+    <h1>Test Booking API</h1>
+    <button onclick="testBooking()">Test Hotel Booking</button>
+    <div id="result"></div>
+
+    <script>
+        async function testBooking() {
+            try {
+                const bookingData = {
+                    bookingType: "hotel",
+                    itemId: "665f8a05a1b2c3d4e5f67895",
+                    customerInfo: {
+                        name: "Test User",
+                        email: "test@example.com",
+                        phone: "9999999999"
+                    },
+                    paymentInfo: {
+                        paymentId: "test_payment_" + Date.now(),
+                        amount: 1000,
+                        method: "demo",
+                        status: "success",
+                        timestamp: new Date().toISOString()
+                    },
+                    totalAmount: 1000
+                };
+
+                console.log('Testing booking API...');
+                console.log('Booking data:', bookingData);
+
+                const response = await fetch('http://localhost:8800/api/v1/bookings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bookingData)
+                });
+
+                const result = await response.json();
+                console.log('Response:', result);
+
+                document.getElementById('result').innerHTML = `
+                    <h3>Response:</h3>
+                    <pre>${JSON.stringify(result, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = `
+                    <h3>Error:</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
