@@ -27,7 +27,7 @@ const useFetch = (endpoint, page = 1, limit = 10) => {
     fetchData();
   }, [endpoint, page, limit]);
 
-  console.log("data is :" , data);
+
 
   const reFetch = async () => {
     setLoading(true);

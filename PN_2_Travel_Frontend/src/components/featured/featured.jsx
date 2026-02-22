@@ -1,11 +1,45 @@
 import { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import useFetch from "../../hooks/usefetch";
 import { API_URL } from "../../config";
+import BookingOptionsModal from "../common/BookingOptionsModal";
 import "./featured.css";
 
 const Featured = () => {
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedHotel, setSelectedHotel] = useState(null);
   const { data, loading, error, hasMore } = useFetch(`${API_URL}/hotels/paginated`, page);
+
+  const handleViewDetails = (hotel) => {
+    console.log('View Details clicked for hotel:', hotel);
+    setSelectedHotel(hotel);
+    setIsModalOpen(true);
+  };
+
+  const handleModalConfirm = (bookingData) => {
+    console.log('Booking data:', bookingData);
+
+    // Store hotel data and booking preferences for viewing
+    const hotelWithBookingData = {
+      ...selectedHotel,
+      bookingPreferences: bookingData
+    };
+
+    localStorage.setItem('viewingHotel', JSON.stringify(hotelWithBookingData));
+    localStorage.setItem('hotelBookingData', JSON.stringify(bookingData));
+
+    // Close modal and navigate to hotel details page
+    setIsModalOpen(false);
+    setSelectedHotel(null);
+    navigate(`/hotel/${selectedHotel._id}`);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedHotel(null);
+  };
 
   const handleScroll = useCallback(() => {
     if (window.innerHeight + document.documentElement.scrollTop === document.documentElement.offsetHeight) {
@@ -54,13 +88,25 @@ const Featured = () => {
               <div className="card-footer">
                 <span className="card-price">₹{hotel.cheapestPrice}</span>
                 <span className="price-unit">/ night</span>
-                <button className="view-button">View Details</button>
+                <button
+                  className="view-button"
+                  onClick={() => handleViewDetails(hotel)}
+                >
+                  View Details
+                </button>
               </div>
             </div>
           </div>
         ))}
       </div>
       {loading && <div className="loading">Loading more hotels...</div>}
+
+      <BookingOptionsModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onConfirm={handleModalConfirm}
+        hotel={selectedHotel}
+      />
     </div>
   );
 };

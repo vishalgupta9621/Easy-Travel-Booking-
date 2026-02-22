@@ -62,18 +62,31 @@ export const getPaymentsByUser = async (req, res) => {
     const { userId } = req.params;
     const { page = 1, limit = 10 } = req.query;
 
-    // For now, we'll use customer email to find payments
-    // In a real app, you'd have proper user relationships
-    const payments = await Payment.find({
-      'customerInfo.email': { $exists: true }
-    })
+    // First, get the user to find their email
+    const User = (await import('../models/users.model.js')).default;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Find payments by user email or userId
+    const query = {
+      $or: [
+        { 'customerInfo.email': user.email },
+        { userId: userId }
+      ]
+    };
+
+    const payments = await Payment.find(query)
       .sort({ createdAt: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit);
 
-    const total = await Payment.countDocuments({
-      'customerInfo.email': { $exists: true }
-    });
+    const total = await Payment.countDocuments(query);
 
     res.json({
       success: true,

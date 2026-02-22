@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API</title>
+</head>
+<body>
+    <h1>Testing Booking API</h1>
+    <button onclick="testAPI()">Test Create Booking</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+            
+            const testBooking = {
+                bookingType: 'flight',
+                userId: '689043e5b457708e6fb079c0',
+                itemId: 'flight_test',
+                itemDetails: {
+                    flightNumber: 'AI101',
+                    airline: { name: 'Air India', code: 'AI' },
+                    route: {
+                        origin: { city: 'Delhi', airport: 'DEL' },
+                        destination: { city: 'Mumbai', airport: 'BOM' }
+                    }
+                },
+                customerInfo: {
+                    name: 'Test User',
+                    email: 'testuser@gmail.com',
+                    phone: '8787876543'
+                },
+                totalAmount: 5000,
+                travelDate: '2025-08-25T00:00:00.000Z',
+                bookingStatus: 'confirmed',
+                paymentInfo: {
+                    paymentId: 'test_001',
+                    amount: 5000,
+                    currency: 'INR',
+                    method: 'demo',
+                    status: 'success'
+                }
+            };
+            
+            try {
+                const response = await fetch('http://localhost:8800/api/v1/bookings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testBooking)
+                });
+                
+                const result = await response.json();
+                resultDiv.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

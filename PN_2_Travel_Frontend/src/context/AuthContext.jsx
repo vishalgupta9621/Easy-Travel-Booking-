@@ -134,11 +134,21 @@ export const AuthProvider = ({ children }) => {
   // Register method (optional)
   const register = async (userData) => {
     try {
+      dispatch({ type: AUTH_ACTIONS.REGISTER_START });
       const res = await userService.register(userData);
+      dispatch({
+        type: AUTH_ACTIONS.REGISTER_SUCCESS,
+        payload: { user: res.user, token: res.token }
+      });
       return { success: true, data: res };
     } catch (error) {
       console.error('Registration error:', error);
-      return { success: false, error: error.response?.data?.message || 'Registration failed' };
+      const errorMessage = error.response?.data?.message || 'Registration failed';
+      dispatch({
+        type: AUTH_ACTIONS.REGISTER_FAILURE,
+        payload: errorMessage
+      });
+      return { success: false, error: errorMessage };
     }
   };
 
@@ -154,13 +164,52 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
   };
 
+  // Forgot password function
+  const forgotPassword = async (email) => {
+    try {
+      const result = await userService.forgotPassword(email);
+      return { success: true, data: result };
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to send reset email';
+      return { success: false, error: errorMessage };
+    }
+  };
+
+  // Reset password function
+  const resetPassword = async (resetData) => {
+    try {
+      const result = await userService.resetPassword(resetData);
+      return { success: true, data: result };
+    } catch (error) {
+      console.error('Reset password error:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to reset password';
+      return { success: false, error: errorMessage };
+    }
+  };
+
+  // Validate reset token function
+  const validateResetToken = async (token, email) => {
+    try {
+      const result = await userService.validateResetToken(token, email);
+      return { success: true, data: result };
+    } catch (error) {
+      console.error('Validate token error:', error);
+      const errorMessage = error.response?.data?.message || 'Invalid reset token';
+      return { success: false, error: errorMessage };
+    }
+  };
+
   // Context value
   const value = {
     ...state,
     login,
     register,
     logout,
-    clearError
+    clearError,
+    forgotPassword,
+    resetPassword,
+    validateResetToken
   };
 
   return (

@@ -1,9 +1,9 @@
 import BaseRepository from './base/base.repository.js';
-import UniversalBooking from '../models/UniversalBooking.js';
+import Booking from '../models/Booking.js';
 
 export class UniversalBookingRepository extends BaseRepository {
     constructor() {
-        super(UniversalBooking);
+        super(Booking);
     }
 
     async findByUserId(userId) {
@@ -36,7 +36,7 @@ export class UniversalBookingRepository extends BaseRepository {
 
     async getPaginated(page, limit) {
         const skip = (page - 1) * limit;
-        
+
         const bookings = await this.model.find()
             .populate('userId', 'username firstName lastName email')
             .skip(skip)
@@ -69,10 +69,10 @@ export class UniversalBookingRepository extends BaseRepository {
                 $group: {
                     _id: {
                         bookingType: '$bookingType',
-                        status: '$status'
+                        bookingStatus: '$bookingStatus'
                     },
                     count: { $sum: 1 },
-                    totalRevenue: { $sum: '$pricing.totalPrice' }
+                    totalRevenue: { $sum: '$totalAmount' }
                 }
             },
             {
@@ -80,7 +80,7 @@ export class UniversalBookingRepository extends BaseRepository {
                     _id: '$_id.bookingType',
                     statuses: {
                         $push: {
-                            status: '$_id.status',
+                            status: '$_id.bookingStatus',
                             count: '$count',
                             revenue: '$totalRevenue'
                         }
@@ -94,13 +94,13 @@ export class UniversalBookingRepository extends BaseRepository {
     }
 
     async getBookingsByStatus(status) {
-        return this.model.find({ status })
+        return this.model.find({ bookingStatus: status })
             .populate('userId', 'username firstName lastName email')
             .sort({ createdAt: -1 });
     }
 
     async getBookingsByPaymentStatus(paymentStatus) {
-        return this.model.find({ 'payment.paymentStatus': paymentStatus })
+        return this.model.find({ 'paymentInfo.status': paymentStatus })
             .populate('userId', 'username firstName lastName email')
             .sort({ createdAt: -1 });
     }
@@ -131,15 +131,15 @@ export class UniversalBookingRepository extends BaseRepository {
                         $gte: new Date(startDate),
                         $lte: new Date(endDate)
                     },
-                    'payment.paymentStatus': 'completed'
+                    'paymentInfo.status': 'success'
                 }
             },
             {
                 $group: {
                     _id: groupFormat,
-                    totalRevenue: { $sum: '$pricing.totalPrice' },
+                    totalRevenue: { $sum: '$totalAmount' },
                     bookingCount: { $sum: 1 },
-                    avgBookingValue: { $avg: '$pricing.totalPrice' }
+                    avgBookingValue: { $avg: '$totalAmount' }
                 }
             },
             { $sort: { _id: 1 } }
@@ -157,7 +157,7 @@ export class UniversalBookingRepository extends BaseRepository {
                 $group: {
                     _id: '$travelDetails.route',
                     count: { $sum: 1 },
-                    totalRevenue: { $sum: '$pricing.totalPrice' }
+                    totalRevenue: { $sum: '$totalAmount' }
                 }
             },
             { $sort: { count: -1 } },
@@ -182,7 +182,7 @@ export class UniversalBookingRepository extends BaseRepository {
                         type: '$bookingType'
                     },
                     count: { $sum: 1 },
-                    revenue: { $sum: '$pricing.totalPrice' }
+                    revenue: { $sum: '$totalAmount' }
                 }
             },
             {
@@ -209,8 +209,8 @@ export class UniversalBookingRepository extends BaseRepository {
                 $group: {
                     _id: '$userId',
                     bookingCount: { $sum: 1 },
-                    totalSpent: { $sum: '$pricing.totalPrice' },
-                    avgBookingValue: { $avg: '$pricing.totalPrice' }
+                    totalSpent: { $sum: '$totalAmount' },
+                    avgBookingValue: { $avg: '$totalAmount' }
                 }
             },
             { $sort: { totalSpent: -1 } },

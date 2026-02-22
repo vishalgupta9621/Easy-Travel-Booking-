@@ -88,6 +88,33 @@
   background-color: #ff3742;
 }
 
+.navButton.account {
+  background-color: #667eea;
+  color: white;
+}
+
+.navButton.account:hover {
+  background-color: #5a6fd8;
+}
+
+.navButton.admin {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.navButton.admin:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.navButton.admin::before {
+  content: '🛡️';
+  margin-right: 5px;
+}
+
 .welcomeText {
   color: white;
   font-weight: 500;

@@ -94,6 +94,8 @@ const BookingDetails = () => {
         <h1>Booking Details</h1>
       </div>
 
+
+
       <div className="booking-content">
         <div className="booking-item-details">
           {renderBookingDetails()}
@@ -111,11 +113,11 @@ const BookingDetails = () => {
           </div>
           <div className="summary-item">
             <span>Price:</span>
-            <span>₹{getItemPrice()}</span>
+            <span>₹{getItemPrice().toLocaleString()}</span>
           </div>
           <div className="summary-item total">
             <span>Total Amount:</span>
-            <span>₹{getItemPrice()}</span>
+            <span>₹{getItemPrice().toLocaleString()}</span>
           </div>
           
           <button 
@@ -167,7 +169,7 @@ const BookingDetails = () => {
             </div>
             <div className="detail-row">
               <span>Price per night (per room):</span>
-              <span>₹{item.cheapestPrice}</span>
+              <span>₹{parseInt(item.cheapestPrice || 0).toLocaleString()}</span>
             </div>
             <div className="detail-row">
               <span>Description:</span>
@@ -317,7 +319,17 @@ const BookingDetails = () => {
     if (type === 'hotel') {
       const days = calculateDays();
       const rooms = bookingData.rooms || 1;
-      return basePrice * days * rooms;
+      const totalPrice = basePrice * days * rooms;
+      console.log('BookingDetails - Hotel Price Calculation:', {
+        basePrice,
+        days,
+        rooms,
+        totalPrice,
+        checkIn: bookingData.checkIn,
+        checkOut: bookingData.checkOut,
+        calculation: `${basePrice} × ${days} × ${rooms} = ${totalPrice}`
+      });
+      return totalPrice;
     }
 
     return basePrice;

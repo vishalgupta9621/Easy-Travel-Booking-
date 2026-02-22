@@ -135,13 +135,18 @@ export const createBooking = async (req, res) => {
         orderId: paymentInfo.orderId || 'order_' + Date.now(),
         amount: paymentInfo.amount || totalAmount,
         currency: paymentInfo.currency || 'INR',
-        method: paymentInfo.method || 'demo',
+        method: paymentInfo.method || 'razorpay',
         status: paymentInfo.status || 'success',
         signature: paymentInfo.signature,
         customerInfo: {
           name: customerInfo.name,
           email: customerInfo.email,
           phone: customerInfo.phone
+        },
+        paymentDetails: {
+          gateway: paymentInfo.method === 'demo' ? 'demo' : 'razorpay',
+          transactionId: paymentInfo.paymentId,
+          bankReference: paymentInfo.bankReference || null
         },
         timestamp: paymentInfo.timestamp ? new Date(paymentInfo.timestamp) : new Date()
       });
@@ -237,7 +242,7 @@ export const getBookingByNumber = async (req, res) => {
 export const getUserBookings = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { page = 1, limit = 10, status } = req.query;
+    const { page, limit, status } = req.query;
 
     // First try to find user by ID
     const user = await User.findById(userId);
@@ -260,23 +265,40 @@ export const getUserBookings = async (req, res) => {
       query.bookingStatus = status;
     }
 
-    const bookings = await Booking.find(query)
-      .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
+    // If pagination parameters are provided, use them; otherwise return all bookings
+    let bookings;
+    let total;
 
-    const total = await Booking.countDocuments(query);
+    if (page && limit) {
+      // Paginated response
+      bookings = await Booking.find(query)
+        .sort({ createdAt: -1 })
+        .limit(limit * 1)
+        .skip((page - 1) * limit);
 
-    res.json({
-      success: true,
-      data: bookings,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit)
-      }
-    });
+      total = await Booking.countDocuments(query);
+
+      res.json({
+        success: true,
+        data: bookings,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total,
+          pages: Math.ceil(total / limit)
+        }
+      });
+    } else {
+      // Return all bookings without pagination
+      bookings = await Booking.find(query)
+        .sort({ createdAt: -1 });
+
+      res.json({
+        success: true,
+        data: bookings,
+        total: bookings.length
+      });
+    }
 
   } catch (error) {
     console.error('Get user bookings error:', error);

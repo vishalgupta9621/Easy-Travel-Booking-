@@ -27,6 +27,11 @@ const Navbar = () => {
               <Link to="/account" style={{ textDecoration: "none" }}>
                 <button className="navButton account">My Account</button>
               </Link>
+              {user?.role === 'admin' && (
+                <Link to="/admin" style={{ textDecoration: "none" }}>
+                  <button className="navButton admin">Admin Panel</button>
+                </Link>
+              )}
               <button className="navButton logout" onClick={handleLogout}>
                 Logout
               </button>

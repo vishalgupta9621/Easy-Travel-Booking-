@@ -10,6 +10,14 @@ export class UsersRepository extends BaseRepository {
         return this.model.findOne({ email });
     }
 
+    async findByUsername(username) {
+        return this.model.findOne({ username });
+    }
+
+    async findByPhone(phone) {
+        return this.model.findOne({ phone });
+    }
+
     async getPaginatedUsers(page = 1, limit = 10) {
         const skip = (page - 1) * limit;
         const users = await this.model.find()

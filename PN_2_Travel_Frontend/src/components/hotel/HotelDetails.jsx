@@ -9,6 +9,7 @@ const HotelDetails = () => {
   const { isAuthenticated } = useAuth();
   const [hotel, setHotel] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [bookingPreferences, setBookingPreferences] = useState(null);
 
   useEffect(() => {
     loadHotelData();
@@ -20,9 +21,18 @@ const HotelDetails = () => {
 
       // First try to get from localStorage (for immediate display)
       const viewingHotel = localStorage.getItem('viewingHotel');
+      const hotelBookingData = localStorage.getItem('hotelBookingData');
+
       if (viewingHotel) {
         const hotelData = JSON.parse(viewingHotel);
         setHotel(hotelData);
+
+        // Set booking preferences if available
+        if (hotelData.bookingPreferences) {
+          setBookingPreferences(hotelData.bookingPreferences);
+        } else if (hotelBookingData) {
+          setBookingPreferences(JSON.parse(hotelBookingData));
+        }
       }
 
       // Then fetch fresh data from API
@@ -48,13 +58,21 @@ const HotelDetails = () => {
       return;
     }
 
-    // Store booking data
+    // Store booking data with preferences
     const bookingData = {
       type: 'hotel',
       item: hotel,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      // Include booking preferences if available
+      ...(bookingPreferences && {
+        checkIn: bookingPreferences.checkIn,
+        checkOut: bookingPreferences.checkOut,
+        guests: bookingPreferences.guests,
+        rooms: bookingPreferences.rooms
+      })
     };
-    
+
+    console.log('Storing booking data:', bookingData);
     localStorage.setItem('pendingBooking', JSON.stringify(bookingData));
     navigate(`/booking/hotel/${hotel._id}`);
   };
@@ -142,6 +160,66 @@ const HotelDetails = () => {
             </div>
           )}
 
+          {bookingPreferences && (
+            <div className="info-section booking-preferences">
+              <h3>Your Stay Details</h3>
+              <div className="preferences-grid">
+                <div className="preference-item">
+                  <span className="preference-label">📅 Check-in:</span>
+                  <span className="preference-value">{new Date(bookingPreferences.checkIn).toLocaleDateString()}</span>
+                </div>
+                <div className="preference-item">
+                  <span className="preference-label">📅 Check-out:</span>
+                  <span className="preference-value">{new Date(bookingPreferences.checkOut).toLocaleDateString()}</span>
+                </div>
+                <div className="preference-item">
+                  <span className="preference-label">👥 Guests:</span>
+                  <span className="preference-value">{bookingPreferences.guests}</span>
+                </div>
+                <div className="preference-item">
+                  <span className="preference-label">🏠 Rooms:</span>
+                  <span className="preference-value">{bookingPreferences.rooms}</span>
+                </div>
+                <div className="preference-item">
+                  <span className="preference-label">🌙 Nights:</span>
+                  <span className="preference-value">
+                    {(() => {
+                      const checkInDate = new Date(bookingPreferences.checkIn);
+                      const checkOutDate = new Date(bookingPreferences.checkOut);
+                      const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
+                      const nights = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                      return nights;
+                    })()}
+                  </span>
+                </div>
+                <div className="preference-item total-cost">
+                  <span className="preference-label">💰 Total Cost:</span>
+                  <span className="preference-value">
+                    ₹{(() => {
+                      const checkInDate = new Date(bookingPreferences.checkIn);
+                      const checkOutDate = new Date(bookingPreferences.checkOut);
+                      const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
+                      const nights = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                      const pricePerNight = parseInt(hotel.cheapestPrice) || 0;
+                      const totalCost = pricePerNight * nights * bookingPreferences.rooms;
+                      console.log('Hotel Details Total Calculation:', {
+                        hotelPrice: hotel.cheapestPrice,
+                        pricePerNight,
+                        nights,
+                        rooms: bookingPreferences.rooms,
+                        totalCost,
+                        checkIn: bookingPreferences.checkIn,
+                        checkOut: bookingPreferences.checkOut,
+                        calculation: `${pricePerNight} × ${nights} × ${bookingPreferences.rooms} = ${totalCost}`
+                      });
+                      return totalCost.toLocaleString();
+                    })()}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="info-section">
             <h3>Amenities</h3>
             <div className="amenities-list">
@@ -155,11 +233,29 @@ const HotelDetails = () => {
           </div>
 
           <div className="booking-section">
-            <button 
+            <button
               className="book-now-btn"
               onClick={handleBookNow}
             >
-              Book Now - ₹{hotel.cheapestPrice}/night
+              {bookingPreferences ? (
+                `Book Now - ₹${(() => {
+                  const checkInDate = new Date(bookingPreferences.checkIn);
+                  const checkOutDate = new Date(bookingPreferences.checkOut);
+                  const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
+                  const nights = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                  const pricePerNight = parseInt(hotel.cheapestPrice) || 0;
+                  const totalCost = pricePerNight * nights * bookingPreferences.rooms;
+                  console.log('Book Now Button Calculation:', {
+                    pricePerNight,
+                    nights,
+                    rooms: bookingPreferences.rooms,
+                    totalCost
+                  });
+                  return totalCost.toLocaleString();
+                })()} Total`
+              ) : (
+                `Book Now - ₹${hotel.cheapestPrice}/night`
+              )}
             </button>
           </div>
         </div>

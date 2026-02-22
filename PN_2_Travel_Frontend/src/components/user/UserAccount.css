@@ -30,6 +30,33 @@
   font-size: 1.1rem;
 }
 
+.account-actions {
+  margin-top: 25px;
+}
+
+.homepage-btn {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 12px 25px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.homepage-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  color: white;
+  text-decoration: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
 .account-tabs {
   display: flex;
   gap: 10px;
@@ -71,14 +98,56 @@
 
 .no-data {
   text-align: center;
-  padding: 60px 20px;
+  padding: 40px 20px;
   color: #666;
   background: #f8f9fa;
   border-radius: 15px;
+  margin: 20px 0;
+}
+
+.no-data h4 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+  font-size: 1.3rem;
 }
 
 .no-data p {
   font-size: 1.1rem;
+}
+
+.booking-suggestions {
+  margin: 20px 0;
+  text-align: left;
+  display: inline-block;
+}
+
+.booking-suggestions ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.booking-suggestions li {
+  padding: 5px 0;
+  color: #555;
+}
+
+.start-booking-btn {
+  display: inline-block;
+  background: #667eea;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 500;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+}
+
+.start-booking-btn:hover {
+  background: #5a6fd8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .bookings-list,
@@ -168,6 +237,22 @@
   font-weight: 600;
 }
 
+.booking-type {
+  background: #667eea;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.amount {
+  color: #27ae60;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
 .not-logged-in,
 .loading {
   text-align: center;
@@ -193,9 +278,14 @@
   .account-header {
     padding: 30px 20px;
   }
-  
+
   .account-header h1 {
     font-size: 2rem;
+  }
+
+  .homepage-btn {
+    padding: 10px 20px;
+    font-size: 15px;
   }
   
   .account-tabs {

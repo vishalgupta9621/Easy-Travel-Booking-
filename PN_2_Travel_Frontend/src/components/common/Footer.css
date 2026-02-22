@@ -1,0 +1,163 @@
+.main-footer {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+  margin-top: 50px;
+}
+
+.footer-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 60px 20px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+/* Centered Business Partners Section */
+.business-partners.centered {
+  text-align: center;
+}
+
+/* Business Partners Section */
+.partner-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  justify-content: center;
+  align-items: center;
+}
+
+.partner-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-align: center;
+  border: 2px solid transparent;
+}
+
+.hotel-owner-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.admin-btn {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
+
+.partner-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-subtitle {
+  font-size: 0.75rem;
+  opacity: 0.9;
+  margin-top: 4px;
+  font-weight: 400;
+}
+
+
+
+/* Footer Bottom */
+.footer-bottom {
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 25px 0;
+}
+
+.footer-bottom-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-left p {
+  margin: 0 0 5px 0;
+  color: #bdc3c7;
+  font-size: 0.85rem;
+}
+
+.footer-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.social-links {
+  display: flex;
+  gap: 15px;
+}
+
+.social-links a {
+  font-size: 1.2rem;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+}
+
+.social-links a:hover {
+  transform: scale(1.2);
+}
+
+.certifications {
+  display: flex;
+  gap: 10px;
+}
+
+.cert-badge {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: #bdc3c7;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer-container {
+    padding: 40px 20px 30px;
+  }
+
+  .partner-buttons {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .footer-bottom-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-right {
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-container {
+    padding: 30px 15px 20px;
+  }
+
+  .partner-buttons {
+    gap: 15px;
+  }
+
+  .partner-btn {
+    padding: 12px;
+    min-width: 200px;
+  }
+}

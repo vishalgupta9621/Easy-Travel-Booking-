@@ -236,10 +236,13 @@
 }
 
 /* Hotel Actions */
-.hotel-actions {
+.hotel-actions,
+.package-actions {
   display: flex;
   gap: 10px;
   margin-top: 15px;
+  position: relative;
+  z-index: 10;
 }
 
 .view-btn {
@@ -251,14 +254,23 @@
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
-  cursor: pointer;
+  cursor: pointer !important;
   transition: all 0.3s ease;
+  position: relative;
+  z-index: 15;
+  pointer-events: auto !important;
+  user-select: none;
 }
 
 .view-btn:hover {
   background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
   border-color: #adb5bd;
   transform: translateY(-1px);
+}
+
+.view-btn:active {
+  transform: translateY(0);
+  background: linear-gradient(135deg, #dee2e6 0%, #ced4da 100%);
 }
 
 .book-btn {
@@ -270,13 +282,33 @@
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
-  cursor: pointer;
+  cursor: pointer !important;
   transition: all 0.3s ease;
+  position: relative;
+  z-index: 15;
+  pointer-events: auto !important;
+  user-select: none;
 }
 
 .book-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.book-btn:active {
+  transform: translateY(0);
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a5b96 100%);
+}
+
+/* Package-specific styles */
+.package-info {
+  margin: 10px 0;
+}
+
+.package-info p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #666;
 }
 
 @media (max-width: 480px) {

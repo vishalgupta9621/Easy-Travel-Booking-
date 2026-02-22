@@ -22,9 +22,49 @@ export class FlightRepository extends BaseRepository {
     }
 
     async searchFlights(origin, destination, date, flightClass = 'economy') {
+        // First, find destination IDs by city names
+        const Destination = this.model.db.model('Destination');
+
+        let originDestinations = [];
+        let destinationDestinations = [];
+
+        // Search for origin destinations
+        if (origin) {
+            originDestinations = await Destination.find({
+                $or: [
+                    { city: { $regex: origin, $options: 'i' } },
+                    { name: { $regex: origin, $options: 'i' } },
+                    { code: { $regex: origin, $options: 'i' } }
+                ],
+                type: 'airport',
+                isActive: true
+            });
+        }
+
+        // Search for destination destinations
+        if (destination) {
+            destinationDestinations = await Destination.find({
+                $or: [
+                    { city: { $regex: destination, $options: 'i' } },
+                    { name: { $regex: destination, $options: 'i' } },
+                    { code: { $regex: destination, $options: 'i' } }
+                ],
+                type: 'airport',
+                isActive: true
+            });
+        }
+
+        // If no destinations found, return empty array
+        if (originDestinations.length === 0 || destinationDestinations.length === 0) {
+            return [];
+        }
+
+        const originIds = originDestinations.map(dest => dest._id);
+        const destinationIds = destinationDestinations.map(dest => dest._id);
+
         const query = {
-            'route.origin': origin,
-            'route.destination': destination,
+            'route.origin': { $in: originIds },
+            'route.destination': { $in: destinationIds },
             status: 'active'
         };
 
@@ -34,13 +74,22 @@ export class FlightRepository extends BaseRepository {
             query['schedule.validTo'] = { $gte: searchDate };
         }
 
-        // Ensure the requested class has available seats
+        // Ensure the requested class has available seats (optional check)
         if (flightClass === 'economy') {
-            query['pricing.economy.totalSeats'] = { $gt: 0 };
+            query['$or'] = [
+                { 'pricing.economy.totalSeats': { $gt: 0 } },
+                { 'pricing.economy.totalSeats': { $exists: false } }
+            ];
         } else if (flightClass === 'business') {
-            query['pricing.business.totalSeats'] = { $gt: 0 };
+            query['$or'] = [
+                { 'pricing.business.totalSeats': { $gt: 0 } },
+                { 'pricing.business.totalSeats': { $exists: false } }
+            ];
         } else if (flightClass === 'first') {
-            query['pricing.first.totalSeats'] = { $gt: 0 };
+            query['$or'] = [
+                { 'pricing.first.totalSeats': { $gt: 0 } },
+                { 'pricing.first.totalSeats': { $exists: false } }
+            ];
         }
 
         return this.model.find(query)

@@ -3,6 +3,9 @@ import packageController from '../app/api/v1/controllers/package.controller.js';
 
 const router = express.Router();
 
+// Get all packages
+router.get('/', packageController.getPopularPackages);
+
 // Search packages
 router.get('/search', packageController.searchPackages);
 
@@ -29,6 +32,7 @@ router.post('/', packageController.createPackage);
 
 // Update package (admin)
 router.put('/:packageId', packageController.updatePackage);
+
 
 // Delete package (admin)
 router.delete('/:packageId', packageController.deletePackage);

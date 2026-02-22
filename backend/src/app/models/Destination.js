@@ -21,8 +21,7 @@ const DestinationSchema = new mongoose.Schema({
   description: { type: String }
 }, { timestamps: true });
 
-// Indexes for better search performance
-DestinationSchema.index({ code: 1 });
+// Indexes for better search performance (code already has unique index)
 DestinationSchema.index({ city: 1 });
 DestinationSchema.index({ type: 1 });
 DestinationSchema.index({ isActive: 1 });

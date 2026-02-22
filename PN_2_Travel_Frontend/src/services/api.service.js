@@ -109,13 +109,13 @@ export class FlightService extends ApiService {
   async search(from, to, departureDate, returnDate = null) {
     const params = { from, to, departureDate };
     if (returnDate) params.returnDate = returnDate;
-    
-    const response = await api.get(`/${this.endpoint}/search`, { params });
+
+    const response = await api.get(`/v1/${this.endpoint}/search`, { params });
     return response.data;
   }
 
   async getByRoute(from, to) {
-    const response = await api.get(`/${this.endpoint}/route`, {
+    const response = await api.get(`/v1/${this.endpoint}/route`, {
       params: { from, to }
     });
     return response.data;
@@ -129,14 +129,14 @@ export class TrainService extends ApiService {
   }
 
   async search(from, to, departureDate) {
-    const response = await api.get(`/${this.endpoint}/search`, {
+    const response = await api.get(`/v1/${this.endpoint}/search`, {
       params: { from, to, departureDate }
     });
     return response.data;
   }
 
   async getByRoute(from, to) {
-    const response = await api.get(`/${this.endpoint}/route`, {
+    const response = await api.get(`/v1/${this.endpoint}/route`, {
       params: { from, to }
     });
     return response.data;
@@ -150,14 +150,14 @@ export class BusService extends ApiService {
   }
 
   async search(from, to, departureDate) {
-    const response = await api.get(`/${this.endpoint}/search`, {
+    const response = await api.get(`/v1/${this.endpoint}/search`, {
       params: { from, to, departureDate }
     });
     return response.data;
   }
 
   async getByRoute(from, to) {
-    const response = await api.get(`/${this.endpoint}/route`, {
+    const response = await api.get(`/v1/${this.endpoint}/route`, {
       params: { from, to }
     });
     return response.data;
@@ -171,38 +171,38 @@ export class PackageService extends ApiService {
   }
 
   async search(searchParams) {
-    const response = await api.get(`/${this.endpoint}/search`, {
+    const response = await api.get(`/v1/${this.endpoint}/search`, {
       params: searchParams
     });
     return response.data;
   }
 
   async getPopular(limit = 10) {
-    const response = await api.get(`/${this.endpoint}/popular`, {
+    const response = await api.get(`/v1/${this.endpoint}/popular`, {
       params: { limit }
     });
     return response.data;
   }
 
   async getByDestination(destination, filters = {}) {
-    const response = await api.get(`/${this.endpoint}/destination/${destination}`, {
+    const response = await api.get(`/v1/${this.endpoint}/destination/${destination}`, {
       params: filters
     });
     return response.data;
   }
 
   async getDetails(packageId) {
-    const response = await api.get(`/${this.endpoint}/${packageId}`);
+    const response = await api.get(`/v1/${this.endpoint}/${packageId}`);
     return response.data;
   }
 
   async getPackageOptions(packageId) {
-    const response = await api.get(`/${this.endpoint}/${packageId}/options`);
+    const response = await api.get(`/v1/${this.endpoint}/${packageId}/options`);
     return response.data;
   }
 
   async calculateDynamicPrice(packageId, preferences, travelDetails) {
-    const response = await api.post(`/${this.endpoint}/${packageId}/calculate-price`, {
+    const response = await api.post(`/v1/${this.endpoint}/${packageId}/calculate-price`, {
       preferences,
       travelDetails
     });
@@ -243,6 +243,21 @@ export class UserService extends ApiService {
 
   async updateProfile(profileData) {
     const response = await api.put('/auth/profile', profileData);
+    return response.data;
+  }
+
+  async forgotPassword(email) {
+    const response = await api.post('/auth/forgot-password', { email });
+    return response.data;
+  }
+
+  async resetPassword(resetData) {
+    const response = await api.post('/auth/reset-password', resetData);
+    return response.data;
+  }
+
+  async validateResetToken(token, email) {
+    const response = await api.get(`/auth/validate-reset-token?token=${token}&email=${encodeURIComponent(email)}`);
     return response.data;
   }
 }
@@ -342,5 +357,44 @@ class BookingService extends ApiService {
 }
 
 export const bookingService = new BookingService();
+
+// Chat Contact Service
+export class ChatContactService extends ApiService {
+  constructor() {
+    super('chat-contacts');
+  }
+
+  async submitContact(contactData) {
+    const response = await api.post('/chat-contacts', contactData);
+    return response.data;
+  }
+
+  async getAllContacts(params = {}) {
+    const response = await api.get('/chat-contacts', { params });
+    return response.data;
+  }
+
+  async getPendingContacts() {
+    const response = await api.get('/chat-contacts/pending');
+    return response.data;
+  }
+
+  async updateContactStatus(id, updateData) {
+    const response = await api.put(`/chat-contacts/${id}`, updateData);
+    return response.data;
+  }
+
+  async addNote(id, note) {
+    const response = await api.post(`/chat-contacts/${id}/notes`, { note });
+    return response.data;
+  }
+
+  async getContactStats() {
+    const response = await api.get('/chat-contacts/stats');
+    return response.data;
+  }
+}
+
+export const chatContactService = new ChatContactService();
 
 export default api;

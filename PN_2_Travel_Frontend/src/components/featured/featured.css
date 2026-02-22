@@ -150,12 +150,22 @@
   border: none;
   padding: 8px 15px;
   border-radius: 4px;
-  cursor: pointer;
+  cursor: pointer !important;
   font-size: 0.9rem;
   transition: background 0.3s ease;
+  position: relative;
+  z-index: 10;
+  pointer-events: auto !important;
+  user-select: none;
 }
 
 .view-button:hover {
+  background: #1565c0;
+  transform: translateY(-1px);
+}
+
+.view-button:active {
+  transform: translateY(0);
   background: #1565c0;
 }
 

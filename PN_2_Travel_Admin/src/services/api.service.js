@@ -299,7 +299,6 @@ export class BookingService extends ApiService {
     return response.data;
   }
 }
-
 export class PackageService extends ApiService {
   constructor() {
     super('packages');
@@ -335,7 +334,19 @@ export class PackageService extends ApiService {
     const response = await api.post(`/v1/${this.endpoint}/book`, bookingData);
     return response.data;
   }
+
+  // ✅ Add this override if needed:
+  async delete(id) {
+    // If your backend expects normal RESTful delete:
+    const response = await api.delete(`/v1/packages/${id}`);
+    return response.data;
+
+    // OR if your backend expects custom route:
+    // const response = await api.delete(`/v1/packages/delete/${id}`);
+    // return response.data;
+  }
 }
+
 
 // Export service instances
 export const userService = new UserService();

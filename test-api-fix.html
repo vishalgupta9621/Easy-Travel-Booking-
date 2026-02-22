@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Booking API Fix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .result {
+            background: #f5f5f5;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Booking API Fix</h1>
+    <p>This page tests if the booking API pagination fix is working correctly.</p>
+    
+    <div class="test-section">
+        <h3>Test 1: Unified Bookings Endpoint (No Pagination)</h3>
+        <button onclick="testUnifiedBookings()">Test Unified Bookings</button>
+        <div id="unified-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 2: Unified Bookings Endpoint (With Pagination)</h3>
+        <button onclick="testUnifiedBookingsWithPagination()">Test With Pagination</button>
+        <div id="unified-pagination-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 3: Package Bookings Endpoint</h3>
+        <button onclick="testPackageBookings()">Test Package Bookings</button>
+        <div id="package-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 4: Hotel Bookings Endpoint</h3>
+        <button onclick="testHotelBookings()">Test Hotel Bookings</button>
+        <div id="hotel-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 5: Travel Bookings Endpoint</h3>
+        <button onclick="testTravelBookings()">Test Travel Bookings</button>
+        <div id="travel-result" class="result"></div>
+    </div>
+
+    <script>
+        const baseURL = 'http://localhost:8800/api/v1';
+        const testUserId = '675b8b8b8b8b8b8b8b8b8b8b'; // Dummy user ID for testing
+        
+        async function testAPI(url, resultElementId, description) {
+            const resultElement = document.getElementById(resultElementId);
+            resultElement.textContent = 'Testing...';
+            resultElement.className = 'result';
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                let resultText = `${description}\n`;
+                resultText += `URL: ${url}\n`;
+                resultText += `Status: ${response.status} ${response.statusText}\n`;
+                resultText += `Response: ${JSON.stringify(data, null, 2)}`;
+                
+                if (response.ok) {
+                    resultElement.className = 'result success';
+                    if (data.data) {
+                        resultText += `\n\nBookings count: ${Array.isArray(data.data) ? data.data.length : 'N/A'}`;
+                    }
+                } else {
+                    resultElement.className = 'result error';
+                }
+                
+                resultElement.textContent = resultText;
+            } catch (error) {
+                resultElement.className = 'result error';
+                resultElement.textContent = `${description}\nError: ${error.message}`;
+            }
+        }
+        
+        function testUnifiedBookings() {
+            testAPI(
+                `${baseURL}/bookings/user/${testUserId}`,
+                'unified-result',
+                'Testing unified bookings without pagination parameters'
+            );
+        }
+        
+        function testUnifiedBookingsWithPagination() {
+            testAPI(
+                `${baseURL}/bookings/user/${testUserId}?page=1&limit=5`,
+                'unified-pagination-result',
+                'Testing unified bookings with pagination parameters'
+            );
+        }
+        
+        function testPackageBookings() {
+            testAPI(
+                `${baseURL}/packages/bookings/all?userId=${testUserId}`,
+                'package-result',
+                'Testing package bookings with userId filter'
+            );
+        }
+        
+        function testHotelBookings() {
+            testAPI(
+                `${baseURL}/hotel-bookings/user/${testUserId}`,
+                'hotel-result',
+                'Testing hotel bookings'
+            );
+        }
+        
+        function testTravelBookings() {
+            testAPI(
+                `${baseURL}/travel-bookings/user/${testUserId}`,
+                'travel-result',
+                'Testing travel bookings'
+            );
+        }
+    </script>
+</body>
+</html>

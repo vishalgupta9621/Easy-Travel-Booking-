@@ -4,7 +4,8 @@ import './PaymentPage.css';
 
 const PaymentPage = ({ bookingData: bookingInfo, onPaymentSuccess, onCancel }) => {
   const [loading, setLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('demo');
+  const [paymentMethod, setPaymentMethod] = useState('razorpay');
+  const [isDemoMode, setIsDemoMode] = useState(false);
 
   const saveBookingToDatabase = async (paymentData) => {
     try {
@@ -16,12 +17,13 @@ const PaymentPage = ({ bookingData: bookingInfo, onPaymentSuccess, onCancel }) =
         itemId: bookingInfo.item._id || 'demo',
         userId: user._id || user.id, // Add userId to associate booking with user
         customerInfo: {
-          name: user.name || 'example',
+          name: user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || 'Guest User',
           email: user.email || 'example@example.com',
           phone: user.phone || '9999999999'
         },
         paymentInfo: paymentData,
-        travelDate: new Date().toISOString(),
+        travelDate: bookingInfo.checkIn || bookingInfo.departure || bookingInfo.startDate || bookingInfo.travelDate || new Date().toISOString(),
+        returnDate: bookingInfo.checkOut || bookingInfo.return || bookingInfo.endDate || bookingInfo.returnDate,
         totalAmount: paymentData.amount
       };
 
@@ -64,7 +66,17 @@ const PaymentPage = ({ bookingData: bookingInfo, onPaymentSuccess, onCancel }) =
     if (type === 'hotel') {
       const days = calculateDays();
       const rooms = bookingInfo.rooms || 1;
-      return basePrice * days * rooms;
+      const totalPrice = basePrice * days * rooms;
+      console.log('PaymentPage - Hotel Price Calculation:', {
+        basePrice,
+        days,
+        rooms,
+        totalPrice,
+        checkIn: bookingInfo.checkIn,
+        checkOut: bookingInfo.checkOut,
+        calculation: `${basePrice} × ${days} × ${rooms} = ${totalPrice}`
+      });
+      return totalPrice;
     }
 
     return basePrice;
@@ -82,17 +94,222 @@ const PaymentPage = ({ bookingData: bookingInfo, onPaymentSuccess, onCancel }) =
     }
   };
 
+  const handleRazorpayPayment = async () => {
+    try {
+      setLoading(true);
+      const amount = getItemPrice();
+      const user = JSON.parse(localStorage.getItem('user')) || {};
+
+      // Generate booking number for this payment
+      const bookingNumber = `BK${Date.now()}${Math.floor(Math.random() * 1000)}`;
+
+      // Create Razorpay order
+      const orderResponse = await fetch('http://localhost:8800/api/v1/razorpay/create-order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: amount,
+          currency: 'INR',
+          bookingNumber: bookingNumber,
+          customerInfo: {
+            name: user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || 'Guest User',
+            email: user.email || 'guest@example.com',
+            phone: user.phone || '9999999999'
+          }
+        })
+      });
+
+      const orderData = await orderResponse.json();
+
+      if (!orderData.success) {
+        throw new Error(orderData.message || 'Failed to create payment order');
+      }
+
+      // If in demo mode, simulate payment
+      if (orderData.isDemoMode) {
+        console.log('Demo mode detected, simulating payment...');
+        setIsDemoMode(true);
+        setTimeout(async () => {
+          const demoPaymentData = {
+            paymentId: `pay_demo_${Date.now()}`,
+            orderId: orderData.order.id,
+            signature: `demo_signature_${Date.now()}`,
+            amount: amount,
+            currency: 'INR',
+            method: 'razorpay',
+            status: 'success',
+            timestamp: new Date().toISOString()
+          };
+
+          await saveBookingToDatabase(demoPaymentData);
+          setLoading(false);
+          onPaymentSuccess(demoPaymentData);
+        }, 2000);
+        return;
+      }
+
+      // Configure Razorpay options
+      const options = {
+        key: orderData.key,
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
+        name: 'Travel Bookings',
+        description: `Booking for ${getItemName()}`,
+        order_id: orderData.order.id,
+        config: {
+          display: {
+            blocks: {
+              banks: {
+                name: 'Pay using Netbanking',
+                instruments: [
+                  {
+                    method: 'netbanking'
+                  }
+                ]
+              },
+              card: {
+                name: 'Pay using Cards',
+                instruments: [
+                  {
+                    method: 'card'
+                  }
+                ]
+              },
+              upi: {
+                name: 'Pay using UPI',
+                instruments: [
+                  {
+                    method: 'upi'
+                  }
+                ]
+              },
+              wallet: {
+                name: 'Pay using Wallets',
+                instruments: [
+                  {
+                    method: 'wallet'
+                  }
+                ]
+              }
+            },
+            sequence: ['card', 'upi', 'banks', 'wallet'],
+            preferences: {
+              show_default_blocks: true
+            }
+          }
+        },
+        handler: async function (response) {
+          try {
+            // Verify payment
+            const verifyResponse = await fetch('http://localhost:8800/api/v1/razorpay/verify-payment', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                bookingNumber: bookingNumber
+              })
+            });
+
+            const verifyData = await verifyResponse.json();
+
+            if (verifyData.success) {
+              // Payment successful - save booking
+              const paymentData = {
+                paymentId: response.razorpay_payment_id,
+                orderId: response.razorpay_order_id,
+                signature: response.razorpay_signature,
+                amount: amount,
+                currency: 'INR',
+                method: 'razorpay',
+                status: 'success',
+                timestamp: new Date().toISOString()
+              };
+
+              await saveBookingToDatabase(paymentData);
+              setLoading(false);
+              onPaymentSuccess(paymentData);
+            } else {
+              throw new Error(verifyData.message || 'Payment verification failed');
+            }
+          } catch (error) {
+            console.error('Payment verification error:', error);
+            setLoading(false);
+            alert('Payment verification failed. Please contact support.');
+          }
+        },
+        prefill: {
+          name: user.name || '',
+          email: user.email || '',
+          contact: user.phone || ''
+        },
+        theme: {
+          color: '#667eea'
+        },
+        modal: {
+          ondismiss: function() {
+            setLoading(false);
+          },
+          confirm_close: true,
+          escape: true,
+          animation: true
+        },
+        retry: {
+          enabled: true,
+          max_count: 3
+        },
+        timeout: 300,
+        remember_customer: false,
+        readonly: {
+          email: false,
+          contact: false,
+          name: false
+        }
+      };
+
+      // Open Razorpay checkout
+      const rzp = new window.Razorpay(options);
+
+      // Add error handler for payment failures
+      rzp.on('payment.failed', function (response) {
+        console.error('Payment failed:', response.error);
+        setLoading(false);
+
+        // Show user-friendly error message
+        const errorMsg = response.error.description || 'Payment failed. Please try again.';
+        alert(`Payment Failed: ${errorMsg}`);
+
+        // Optionally, you can retry with demo payment
+        if (confirm('Would you like to try demo payment instead?')) {
+          handleDemoPayment();
+        }
+      });
+
+      rzp.open();
+
+    } catch (error) {
+      console.error('Payment initiation error:', error);
+      setLoading(false);
+      alert('Failed to initiate payment. Please try again.');
+    }
+  };
+
   const handleDemoPayment = () => {
     setLoading(true);
 
     const amount = getItemPrice();
 
-    // Simulate payment processing
+    // Simulate demo booking processing (for testing)
     setTimeout(async () => {
       const demoPaymentData = {
-        paymentId: 'pay_demo_' + Date.now(),
-        orderId: 'order_demo_' + Date.now(),
-        signature: 'demo_signature',
+        paymentId: 'demo_' + Date.now(),
+        orderId: 'demo_order_' + Date.now(),
+        signature: 'demo_signature_' + Date.now(),
         amount: amount,
         currency: 'INR',
         method: 'demo',
@@ -100,38 +317,10 @@ const PaymentPage = ({ bookingData: bookingInfo, onPaymentSuccess, onCancel }) =
         timestamp: new Date().toISOString()
       };
 
-      // Save booking to database
       await saveBookingToDatabase(demoPaymentData);
-
       setLoading(false);
       onPaymentSuccess(demoPaymentData);
     }, 2000);
-  };
-
-  const handleUPIPayment = () => {
-    setLoading(true);
-
-    const amount = getItemPrice();
-
-    // Simulate UPI payment processing
-    setTimeout(async () => {
-      const upiPaymentData = {
-        paymentId: 'upi_' + Date.now(),
-        orderId: 'order_upi_' + Date.now(),
-        signature: 'upi_signature',
-        amount: amount,
-        currency: 'INR',
-        method: 'upi',
-        status: 'success',
-        timestamp: new Date().toISOString()
-      };
-
-      // Save booking to database
-      await saveBookingToDatabase(upiPaymentData);
-
-      setLoading(false);
-      onPaymentSuccess(upiPaymentData);
-    }, 2500);
   };
 
 
@@ -158,7 +347,7 @@ const PaymentPage = ({ bookingData: bookingInfo, onPaymentSuccess, onCancel }) =
           </div>
           <div className="summary-item total">
             <span>Total Amount:</span>
-            <span>₹{getItemPrice()}</span>
+            <span>₹{getItemPrice().toLocaleString()}</span>
           </div>
         </div>
 
@@ -188,12 +377,30 @@ const PaymentPage = ({ bookingData: bookingInfo, onPaymentSuccess, onCancel }) =
             )}
             <div className="summary-row total">
               <span>Total Amount:</span>
-              <span>₹{getItemPrice()}</span>
+              <span>₹{getItemPrice().toLocaleString()}</span>
             </div>
           </div>
 
+          {isDemoMode && (
+            <div className="demo-notice">
+              <h3>🔧 Demo Mode Active</h3>
+              <p>Razorpay credentials not configured. Using demo payment simulation.</p>
+            </div>
+          )}
+
           <h3>Select Payment Method</h3>
           <div className="payment-options">
+            <div
+              className={`payment-option ${paymentMethod === 'razorpay' ? 'selected' : ''}`}
+              onClick={() => setPaymentMethod('razorpay')}
+            >
+              <div className="payment-icon">💳</div>
+              <div className="payment-info">
+                <h4>Razorpay</h4>
+                <p>Credit/Debit Card, UPI, Net Banking, Wallets</p>
+              </div>
+            </div>
+
             <div
               className={`payment-option ${paymentMethod === 'demo' ? 'selected' : ''}`}
               onClick={() => setPaymentMethod('demo')}
@@ -201,18 +408,7 @@ const PaymentPage = ({ bookingData: bookingInfo, onPaymentSuccess, onCancel }) =
               <div className="payment-icon">🎯</div>
               <div className="payment-info">
                 <h4>Demo Payment</h4>
-                <p>For testing purposes</p>
-              </div>
-            </div>
-
-            <div
-              className={`payment-option ${paymentMethod === 'upi' ? 'selected' : ''}`}
-              onClick={() => setPaymentMethod('upi')}
-            >
-              <div className="payment-icon">📱</div>
-              <div className="payment-info">
-                <h4>UPI Payment</h4>
-                <p>Google Pay, PhonePe, Paytm</p>
+                <p>For testing purposes only</p>
               </div>
             </div>
           </div>
@@ -220,12 +416,12 @@ const PaymentPage = ({ bookingData: bookingInfo, onPaymentSuccess, onCancel }) =
           <button
             className="pay-now-btn"
             onClick={() => {
-              if (paymentMethod === 'upi') handleUPIPayment();
+              if (paymentMethod === 'razorpay') handleRazorpayPayment();
               else handleDemoPayment();
             }}
             disabled={loading}
           >
-            {loading ? 'Processing Payment...' : `Pay ₹${getItemPrice()}`}
+            {loading ? 'Processing Payment...' : `Pay ₹${getItemPrice().toLocaleString()}`}
           </button>
         </div>
       </div>

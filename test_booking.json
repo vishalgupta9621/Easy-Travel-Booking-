@@ -1,0 +1,51 @@
+{
+  "bookingType": "flight",
+  "userId": "689043e5b457708e6fb079c0",
+  "itemId": "flight_ai101",
+  "itemDetails": {
+    "flightNumber": "AI101",
+    "airline": {
+      "name": "Air India",
+      "code": "AI"
+    },
+    "route": {
+      "origin": {
+        "city": "Delhi",
+        "airport": "DEL"
+      },
+      "destination": {
+        "city": "Bangalore",
+        "airport": "BLR"
+      }
+    },
+    "schedule": {
+      "departureTime": "14:30",
+      "arrivalTime": "17:00",
+      "duration": "2h 30m"
+    },
+    "class": "Economy",
+    "seats": ["15A"]
+  },
+  "customerInfo": {
+    "name": "Test User",
+    "email": "testuser@gmail.com",
+    "phone": "8787876543"
+  },
+  "totalAmount": 6500,
+  "travelDate": "2025-08-25T00:00:00.000Z",
+  "bookingStatus": "confirmed",
+  "paymentInfo": {
+    "paymentId": "demo_flight_001",
+    "amount": 6500,
+    "currency": "INR",
+    "method": "demo",
+    "status": "success",
+    "timestamp": "2025-08-04T06:00:00.000Z"
+  },
+  "passengers": [{
+    "name": "Test User",
+    "age": 30,
+    "gender": "Male",
+    "seatNumber": "15A"
+  }]
+}

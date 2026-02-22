@@ -25,7 +25,7 @@ const PaymentSchema = new mongoose.Schema({
   },
   method: {
     type: String,
-    enum: ['demo', 'upi', 'card', 'netbanking', 'wallet'],
+    enum: ['razorpay', 'upi', 'card', 'netbanking', 'wallet', 'demo'],
     required: true
   },
   status: {
@@ -63,9 +63,8 @@ const PaymentSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Index for faster queries
+// Index for faster queries (paymentId already has unique index)
 PaymentSchema.index({ bookingNumber: 1 });
-PaymentSchema.index({ paymentId: 1 });
 PaymentSchema.index({ status: 1 });
 PaymentSchema.index({ method: 1 });
 

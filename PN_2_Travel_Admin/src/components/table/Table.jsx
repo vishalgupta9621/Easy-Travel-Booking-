@@ -5,6 +5,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Paper from "@mui/material/Paper";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -18,7 +19,7 @@ import {
   hotelBookingService,
   universalBookingService,
   bookingService,
-  packageService
+  packageService,
 } from "../../services/api.service";
 
 const DEFAULT_HOTEL_IMAGES = [
@@ -26,7 +27,7 @@ const DEFAULT_HOTEL_IMAGES = [
   "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500&auto=format&fit=crop&q=60",
   "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=500&auto=format&fit=crop&q=60",
   "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=500&auto=format&fit=crop&q=60",
-  "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=500&auto=format&fit=crop&q=60"
+  "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=500&auto=format&fit=crop&q=60",
 ];
 
 const List = ({ isHomePage = false }) => {
@@ -39,23 +40,37 @@ const List = ({ isHomePage = false }) => {
     total: 0,
     page: 1,
     limit: isHomePage ? 5 : 10, // Show fewer items on home page
-    pages: 0
+    pages: 0,
   });
 
   // Determine page type and service
   const getPageInfo = () => {
-    if (pathname.includes("/users")) return { type: "users", service: userService };
-    if (pathname.includes("/hotels")) return { type: "hotels", service: hotelService };
-    if (pathname.includes("/buses")) return { type: "buses", service: busService };
-    if (pathname.includes("/flights")) return { type: "flights", service: flightService };
-    if (pathname.includes("/trains")) return { type: "trains", service: trainService };
-    if (pathname.includes("/packages")) return { type: "packages", service: packageService };
-    if (pathname.includes("/package-bookings")) return { type: "package-bookings", service: packageService };
+    if (pathname.includes("/users"))
+      return { type: "users", service: userService };
+    if (pathname.includes("/hotels"))
+      return { type: "hotels", service: hotelService };
+    if (pathname.includes("/buses"))
+      return { type: "buses", service: busService };
+    if (pathname.includes("/flights"))
+      return { type: "flights", service: flightService };
+    if (pathname.includes("/trains"))
+      return { type: "trains", service: trainService };
+    if (pathname.includes("/packages"))
+      return { type: "packages", service: packageService };
+    if (pathname.includes("/package-bookings"))
+      return { type: "package-bookings", service: packageService };
     // Use main booking service for all booking types since they're in the same collection
-    if (pathname.includes("/travel-bookings")) return { type: "travel-bookings", service: bookingService, filter: "travel" };
-    if (pathname.includes("/hotel-bookings")) return { type: "hotel-bookings", service: bookingService, filter: "hotel" };
-    if (pathname === "/bookings" || pathname.endsWith("/bookings")) return { type: "bookings", service: bookingService };
-    if (pathname.includes("/universal-bookings")) return { type: "universal-bookings", service: universalBookingService };
+    // if (pathname.includes("/travel-bookings")) return { type: "travel-bookings", service: bookingService, filter: "travel" };
+    if (pathname.includes("/hotel-bookings"))
+      return {
+        type: "hotel-bookings",
+        service: hotelBookingService,
+        filter: "hotel",
+      };
+    if (pathname === "/bookings" || pathname.endsWith("/bookings"))
+      return { type: "bookings", service: bookingService };
+    if (pathname.includes("/universal-bookings"))
+      return { type: "universal-bookings", service: universalBookingService };
     return { type: "products", service: null };
   };
 
@@ -76,18 +91,26 @@ const List = ({ isHomePage = false }) => {
           let response;
 
           // Special handling for package bookings
-          if (pageInfo.type === 'package-bookings') {
-            response = await pageInfo.service.getPackageBookings(pagination.page, pagination.limit);
+          if (pageInfo.type === "package-bookings") {
+            response = await pageInfo.service.getPackageBookings(
+              pagination.page,
+              pagination.limit
+            );
           } else if (pageInfo.filter) {
             // For filtered booking types (travel-bookings, hotel-bookings)
-            response = await pageInfo.service.getPaginated(pagination.page, pagination.limit);
+            response = await pageInfo.service.getPaginated(
+              pagination.page,
+              pagination.limit
+            );
             // Filter the response data based on booking type
             if (response.data && Array.isArray(response.data)) {
-              const filteredData = response.data.filter(booking => {
-                if (pageInfo.filter === 'travel') {
-                  return ['flight', 'train', 'bus'].includes(booking.bookingType);
-                } else if (pageInfo.filter === 'hotel') {
-                  return booking.bookingType === 'hotel';
+              const filteredData = response.data.filter((booking) => {
+                if (pageInfo.filter === "travel") {
+                  return ["flight", "train", "bus"].includes(
+                    booking.bookingType
+                  );
+                } else if (pageInfo.filter === "hotel") {
+                  return booking.bookingType === "hotel";
                 }
                 return true;
               });
@@ -96,11 +119,14 @@ const List = ({ isHomePage = false }) => {
               response.pagination = {
                 ...response.pagination,
                 total: filteredData.length,
-                pages: Math.ceil(filteredData.length / pagination.limit)
+                pages: Math.ceil(filteredData.length / pagination.limit),
               };
             }
           } else {
-            response = await pageInfo.service.getPaginated(pagination.page, pagination.limit);
+            response = await pageInfo.service.getPaginated(
+              pagination.page,
+              pagination.limit
+            );
           }
 
           // Handle different response structures
@@ -175,6 +201,65 @@ const List = ({ isHomePage = false }) => {
     fetchData();
   }, [pagination.page, pagination.limit, pageInfo.type]);
 
+//delete button handler
+
+const handleDelete = async (id) => {
+  if (!pageInfo.service) {
+    console.error('No service available for this page.');
+    return;
+  }
+
+  if (window.confirm('Are you sure you want to delete this item?')) {
+    try {
+      await pageInfo.service.delete(id);
+      alert('Deleted successfully!');
+
+      // Re-fetch updated data:
+      const response = await pageInfo.service.getPaginated(
+        pagination.page,
+        pagination.limit
+      );
+
+      // ✅ Handle all types safely:
+      if (response.users) {
+        setData(response.users);
+        setPagination(response.pagination);
+      } else if (response.hotels) {
+        setData(response.hotels);
+        setPagination(response.pagination);
+      } else if (response.buses) {
+        setData(response.buses);
+        setPagination(response.pagination);
+      } else if (response.flights) {
+        setData(response.flights);
+        setPagination(response.pagination);
+      } else if (response.trains) {
+        setData(response.trains);
+        setPagination(response.pagination);
+      } else if (response.packages) {
+            setData(response.packages);
+            setPagination(response.pagination);
+      } else if (response.bookings) {
+        setData(response.bookings);
+        setPagination(response.pagination);
+      } else if (response.data && Array.isArray(response.data)) {
+        setData(response.data);
+        setPagination(response.pagination);
+      } else {
+        console.warn('Unexpected response:', response);
+        setData([]);
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert('Error deleting item.');
+    }
+  }
+};
+
+
+
+
   const renderTableHeaders = () => {
     // For home page, show booking headers
     if (isHomePage) {
@@ -201,6 +286,7 @@ const List = ({ isHomePage = false }) => {
             <TableCell className="tableCell">Location</TableCell>
             <TableCell className="tableCell">Status</TableCell>
             <TableCell className="tableCell">Verified</TableCell>
+             <TableCell className="tableCell">Action</TableCell>
           </>
         );
       case "hotels":
@@ -213,6 +299,7 @@ const List = ({ isHomePage = false }) => {
             <TableCell className="tableCell">Rating</TableCell>
             <TableCell className="tableCell">Price</TableCell>
             <TableCell className="tableCell">Featured</TableCell>
+            <TableCell className="tableCell">Action</TableCell>
           </>
         );
       case "buses":
@@ -225,6 +312,7 @@ const List = ({ isHomePage = false }) => {
             <TableCell className="tableCell">Departure</TableCell>
             <TableCell className="tableCell">Price</TableCell>
             <TableCell className="tableCell">Status</TableCell>
+             <TableCell className="tableCell">Action</TableCell>
           </>
         );
       case "flights":
@@ -237,6 +325,7 @@ const List = ({ isHomePage = false }) => {
             <TableCell className="tableCell">Duration</TableCell>
             <TableCell className="tableCell">Economy Price</TableCell>
             <TableCell className="tableCell">Status</TableCell>
+             <TableCell className="tableCell">Action</TableCell>
           </>
         );
       case "trains":
@@ -249,6 +338,7 @@ const List = ({ isHomePage = false }) => {
             <TableCell className="tableCell">Departure</TableCell>
             <TableCell className="tableCell">Duration</TableCell>
             <TableCell className="tableCell">Status</TableCell>
+             <TableCell className="tableCell">Action</TableCell>
           </>
         );
       case "packages":
@@ -261,6 +351,7 @@ const List = ({ isHomePage = false }) => {
             <TableCell className="tableCell">Base Price</TableCell>
             <TableCell className="tableCell">Rating</TableCell>
             <TableCell className="tableCell">Status</TableCell>
+             <TableCell className="tableCell">Action</TableCell>
           </>
         );
       case "package-bookings":
@@ -273,6 +364,7 @@ const List = ({ isHomePage = false }) => {
             <TableCell className="tableCell">Travelers</TableCell>
             <TableCell className="tableCell">Total Amount</TableCell>
             <TableCell className="tableCell">Status</TableCell>
+            
           </>
         );
       case "travel-bookings":
@@ -350,7 +442,9 @@ const List = ({ isHomePage = false }) => {
           </TableCell>
           <TableCell className="tableCell">₹{item.totalAmount}</TableCell>
           <TableCell className="tableCell">
-            <span className={`status ${item.bookingStatus}`}>{item.bookingStatus}</span>
+            <span className={`status ${item.bookingStatus}`}>
+              {item.bookingStatus}
+            </span>
           </TableCell>
         </>
       );
@@ -367,16 +461,33 @@ const List = ({ isHomePage = false }) => {
             <TableCell className="tableCell">{item.email}</TableCell>
             <TableCell className="tableCell">{item.phone}</TableCell>
             <TableCell className="tableCell">
-              {item.city ? `${item.city}, ${item.state}, ${item.country}` : 'Not specified'}
+              {item.city
+                ? `${item.city}, ${item.state}, ${item.country}`
+                : "Not specified"}
             </TableCell>
             <TableCell className="tableCell">
               <span className={`status ${item.status}`}>{item.status}</span>
             </TableCell>
             <TableCell className="tableCell">
-              <span className={`status ${item.is_verified ? 'Approved' : 'Pending'}`}>
-                {item.is_verified ? 'Verified' : 'Not Verified'}
+              <span
+                className={`status ${
+                  item.is_verified ? "Approved" : "Pending"
+                }`}
+              >
+                {item.is_verified ? "Verified" : "Not Verified"}
               </span>
             </TableCell>
+
+             <TableCell className="tableCell">
+        <button
+          className="deleteButton"
+          onClick={() => handleDelete(item._id)}
+        >
+          <DeleteOutlineIcon
+            style={{ color: "red", cursor: "pointer" }}
+          />
+        </button>
+      </TableCell>
           </>
         );
       case "hotels":
@@ -398,17 +509,33 @@ const List = ({ isHomePage = false }) => {
               </div>
             </TableCell>
             <TableCell className="tableCell">{item.type}</TableCell>
-            <TableCell className="tableCell">{item.city}, {item.address}</TableCell>
+            <TableCell className="tableCell">
+              {item.city}, {item.address}
+            </TableCell>
             <TableCell className="tableCell">{item.distance}</TableCell>
             <TableCell className="tableCell">
               <span className="rating">{item.rating} ★</span>
             </TableCell>
             <TableCell className="tableCell">₹{item.cheapestPrice}</TableCell>
             <TableCell className="tableCell">
-              <span className={`status ${item.featured ? 'Approved' : 'Pending'}`}>
-                {item.featured ? 'Featured' : 'Not Featured'}
+              <span
+                className={`status ${item.featured ? "Approved" : "Pending"}`}
+              >
+                {item.featured ? "Featured" : "Not Featured"}
               </span>
             </TableCell>
+            <TableCell className="tableCell">
+              <button
+                className="deleteButton"
+                onClick={() => handleDelete(item._id)}
+              >
+                <DeleteOutlineIcon
+                  style={{ color: "red", cursor: "pointer" }}
+                />
+              </button>
+            </TableCell>
+
+
           </>
         );
       case "buses":
@@ -420,11 +547,24 @@ const List = ({ isHomePage = false }) => {
             <TableCell className="tableCell">
               {item.route?.origin?.name} → {item.route?.destination?.name}
             </TableCell>
-            <TableCell className="tableCell">{item.schedule?.departureTime}</TableCell>
+            <TableCell className="tableCell">
+              {item.schedule?.departureTime}
+            </TableCell>
             <TableCell className="tableCell">₹{item.basePrice}</TableCell>
             <TableCell className="tableCell">
               <span className={`status ${item.status}`}>{item.status}</span>
             </TableCell>
+
+        <TableCell className="tableCell">
+        <button
+          className="deleteButton"
+          onClick={() => handleDelete(item._id)}
+        >
+          <DeleteOutlineIcon
+            style={{ color: "red", cursor: "pointer" }}
+          />
+        </button>
+      </TableCell>
           </>
         );
       case "flights":
@@ -435,12 +575,29 @@ const List = ({ isHomePage = false }) => {
             <TableCell className="tableCell">
               {item.route?.origin?.name} → {item.route?.destination?.name}
             </TableCell>
-            <TableCell className="tableCell">{item.schedule?.departureTime}</TableCell>
-            <TableCell className="tableCell">{item.schedule?.duration} min</TableCell>
-            <TableCell className="tableCell">₹{item.pricing?.economy?.basePrice}</TableCell>
+            <TableCell className="tableCell">
+              {item.schedule?.departureTime}
+            </TableCell>
+            <TableCell className="tableCell">
+              {item.schedule?.duration} min
+            </TableCell>
+            <TableCell className="tableCell">
+              ₹{item.pricing?.economy?.basePrice}
+            </TableCell>
             <TableCell className="tableCell">
               <span className={`status ${item.status}`}>{item.status}</span>
             </TableCell>
+
+             <TableCell className="tableCell">
+        <button
+          className="deleteButton"
+          onClick={() => handleDelete(item._id)}
+        >
+          <DeleteOutlineIcon
+            style={{ color: "red", cursor: "pointer" }}
+          />
+        </button>
+      </TableCell>
           </>
         );
       case "trains":
@@ -452,14 +609,30 @@ const List = ({ isHomePage = false }) => {
             <TableCell className="tableCell">
               {item.route?.origin?.name} → {item.route?.destination?.name}
             </TableCell>
-            <TableCell className="tableCell">{item.schedule?.departureTime}</TableCell>
-            <TableCell className="tableCell">{item.schedule?.duration}</TableCell>
+            <TableCell className="tableCell">
+              {item.schedule?.departureTime}
+            </TableCell>
+            <TableCell className="tableCell">
+              {item.schedule?.duration}
+            </TableCell>
             <TableCell className="tableCell">
               <span className={`status ${item.status}`}>{item.status}</span>
             </TableCell>
+
+             <TableCell className="tableCell">
+        <button
+          className="deleteButton"
+          onClick={() => handleDelete(item._id)}
+        >
+          <DeleteOutlineIcon
+            style={{ color: "red", cursor: "pointer" }}
+          />
+        </button>
+      </TableCell>
           </>
         );
       case "packages":
+        
         return (
           <>
             <TableCell className="tableCell">
@@ -477,32 +650,62 @@ const List = ({ isHomePage = false }) => {
               </div>
             </TableCell>
             <TableCell className="tableCell">{item.type}</TableCell>
-            <TableCell className="tableCell">{item.destinations?.join(', ')}</TableCell>
+            <TableCell className="tableCell">
+              {item.destinations?.join(", ")}
+            </TableCell>
             <TableCell className="tableCell">{item.duration} days</TableCell>
-            <TableCell className="tableCell">₹{item.basePrice || item.price}</TableCell>
+            <TableCell className="tableCell">
+              ₹{item.basePrice || item.price}
+            </TableCell>
             <TableCell className="tableCell">
               <span className="rating">{item.rating} ★</span>
             </TableCell>
             <TableCell className="tableCell">
-              <span className={`status ${item.isActive ? 'Approved' : 'Pending'}`}>
-                {item.isActive ? 'Active' : 'Inactive'}
+              <span
+                className={`status ${item.isActive ? "Approved" : "Pending"}`}
+              >
+                {item.isActive ? "Active" : "Inactive"}
               </span>
             </TableCell>
+
+             <TableCell className="tableCell">
+        <button
+          className="deleteButton"
+         onClick={() => handleDelete(String(item._id))}
+
+
+
+        >
+          <DeleteOutlineIcon
+            style={{ color: "red", cursor: "pointer" }}
+          />
+        </button>
+      </TableCell>
           </>
         );
       case "package-bookings":
         return (
           <>
             <TableCell className="tableCell">{item.bookingNumber}</TableCell>
-            <TableCell className="tableCell">{item.packageId?.name || 'Package'}</TableCell>
-            <TableCell className="tableCell">{item.customerInfo?.name}</TableCell>
+            <TableCell className="tableCell">
+              {item.packageId?.name || "Package"}
+            </TableCell>
+            <TableCell className="tableCell">
+              {item.customerInfo?.name}
+            </TableCell>
             <TableCell className="tableCell">
               {new Date(item.travelDetails?.startDate).toLocaleDateString()}
             </TableCell>
-            <TableCell className="tableCell">{item.travelDetails?.numberOfTravelers}</TableCell>
-            <TableCell className="tableCell">₹{item.pricingBreakdown?.totalAmount}</TableCell>
             <TableCell className="tableCell">
-              <span className={`status ${item.bookingStatus}`}>{item.bookingStatus}</span>
+              {item.travelDetails?.numberOfTravelers}
+            </TableCell>
+            <TableCell className="tableCell">
+              ₹{item.pricingBreakdown?.totalAmount}
+            </TableCell>
+            <TableCell className="tableCell">
+              <span className={`status ${item.bookingStatus}`}>
+                {item.bookingStatus}
+              </span>
             </TableCell>
           </>
         );
@@ -511,18 +714,26 @@ const List = ({ isHomePage = false }) => {
           <>
             <TableCell className="tableCell">{item.bookingNumber}</TableCell>
             <TableCell className="tableCell">{item.bookingType}</TableCell>
-            <TableCell className="tableCell">{item.customerInfo?.name}</TableCell>
             <TableCell className="tableCell">
-              {item.bookingType === 'flight' ? 'Flight Service' :
-               item.bookingType === 'train' ? 'Train Service' :
-               item.bookingType === 'bus' ? 'Bus Service' : 'Travel Service'}
+              {item.customerInfo?.name}
+            </TableCell>
+            <TableCell className="tableCell">
+              {item.bookingType === "flight"
+                ? "Flight Service"
+                : item.bookingType === "train"
+                ? "Train Service"
+                : item.bookingType === "bus"
+                ? "Bus Service"
+                : "Travel Service"}
             </TableCell>
             <TableCell className="tableCell">
               {new Date(item.createdAt).toLocaleDateString()}
             </TableCell>
             <TableCell className="tableCell">₹{item.totalAmount}</TableCell>
             <TableCell className="tableCell">
-              <span className={`status ${item.bookingStatus}`}>{item.bookingStatus}</span>
+              <span className={`status ${item.bookingStatus}`}>
+                {item.bookingStatus}
+              </span>
             </TableCell>
           </>
         );
@@ -530,53 +741,78 @@ const List = ({ isHomePage = false }) => {
         return (
           <>
             <TableCell className="tableCell">{item.bookingNumber}</TableCell>
-            <TableCell className="tableCell">{item.itemDetails?.name || 'Hotel Booking'}</TableCell>
-            <TableCell className="tableCell">{item.customerInfo?.name}</TableCell>
+            <TableCell className="tableCell">
+              {item.itemDetails?.name || "Hotel Booking"}
+            </TableCell>
+            <TableCell className="tableCell">
+              {item.customerInfo?.email}
+            </TableCell>
             <TableCell className="tableCell">
               {new Date(item.travelDate || item.createdAt).toLocaleDateString()}
             </TableCell>
             <TableCell className="tableCell">₹{item.totalAmount}</TableCell>
             <TableCell className="tableCell">
-              <span className={`status ${item.bookingStatus}`}>{item.bookingStatus}</span>
+              <span className={`status ${item.bookingStatus}`}>
+                {item.bookingStatus}
+              </span>
             </TableCell>
           </>
         );
       case "universal-bookings":
         return (
           <>
-            <TableCell className="tableCell">{item.ticketId}</TableCell>
+            <TableCell className="tableCell">{item.bookingNumber}</TableCell>
             <TableCell className="tableCell">{item.bookingType}</TableCell>
-            <TableCell className="tableCell">{item.userId?.username || item.userId?.firstName}</TableCell>
             <TableCell className="tableCell">
-              {item.travelDetails?.serviceName || item.hotelDetails?.hotelName}
+              {item.customerInfo?.email}
             </TableCell>
+            {/* <TableCell className="tableCell">{item.customerInfo?.phone}</TableCell> */}
+
+            <TableCell className="tableCell">
+              {new Date(item.travelDate).toLocaleDateString()}
+            </TableCell>
+
             <TableCell className="tableCell">
               {new Date(item.bookingDate).toLocaleDateString()}
             </TableCell>
-            <TableCell className="tableCell">₹{item.pricing?.totalPrice}</TableCell>
             <TableCell className="tableCell">
-              <span className={`status ${item.status}`}>{item.status}</span>
+              ₹{item.totalAmount || item.paymentInfo?.amount}
+            </TableCell>
+            <TableCell className="tableCell">
+              <span className={`status ${item.bookingStatus}`}>
+                {item.bookingStatus}
+              </span>
             </TableCell>
           </>
         );
+
       case "bookings":
         return (
           <>
             <TableCell className="tableCell">{item.bookingNumber}</TableCell>
             <TableCell className="tableCell">{item.bookingType}</TableCell>
-            <TableCell className="tableCell">{item.customerInfo?.name}</TableCell>
             <TableCell className="tableCell">
-              {item.bookingType === 'hotel' ? 'Hotel Booking' :
-               item.bookingType === 'flight' ? 'Flight Booking' :
-               item.bookingType === 'train' ? 'Train Booking' :
-               item.bookingType === 'bus' ? 'Bus Booking' : 'Package'}
+              {item.customerInfo?.name}
+            </TableCell>
+            <TableCell className="tableCell">
+              {item.bookingType === "hotel"
+                ? "Hotel Booking"
+                : item.bookingType === "flight"
+                ? "Flight Booking"
+                : item.bookingType === "train"
+                ? "Train Booking"
+                : item.bookingType === "bus"
+                ? "Bus Booking"
+                : "Package"}
             </TableCell>
             <TableCell className="tableCell">
               {new Date(item.createdAt).toLocaleDateString()}
             </TableCell>
             <TableCell className="tableCell">₹{item.totalAmount}</TableCell>
             <TableCell className="tableCell">
-              <span className={`status ${item.bookingStatus}`}>{item.bookingStatus}</span>
+              <span className={`status ${item.bookingStatus}`}>
+                {item.bookingStatus}
+              </span>
             </TableCell>
           </>
         );
@@ -622,13 +858,13 @@ const List = ({ isHomePage = false }) => {
     <TableContainer component={Paper} className="table">
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
-          <TableRow>
-            {renderTableHeaders()}
-          </TableRow>
+          <TableRow>{renderTableHeaders()}</TableRow>
         </TableHead>
         <TableBody>
           {data.map((item) => (
-            <TableRow key={item._id || item.id || item.bookingId || item.ticketId}>
+            <TableRow
+              key={item._id || item.id || item.bookingId || item.ticketId}
+            >
               {renderTableRow(item)}
             </TableRow>
           ))}
@@ -637,14 +873,20 @@ const List = ({ isHomePage = false }) => {
       {pageInfo.service && pagination.pages > 1 && (
         <div className="pagination">
           <button
-            onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+            onClick={() =>
+              setPagination((prev) => ({ ...prev, page: prev.page - 1 }))
+            }
             disabled={pagination.page === 1 || loading}
           >
             Previous
           </button>
-          <span>Page {pagination.page} of {pagination.pages}</span>
+          <span>
+            Page {pagination.page} of {pagination.pages}
+          </span>
           <button
-            onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+            onClick={() =>
+              setPagination((prev) => ({ ...prev, page: prev.page + 1 }))
+            }
             disabled={pagination.page === pagination.pages || loading}
           >
             Next

@@ -141,7 +141,7 @@ const DynamicPackageBooking = () => {
         userId: user._id || user.id, // Add userId to associate booking with user
         customerInfo: {
           ...customerInfo,
-          name: user.name || customerInfo.name,
+          name: user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || customerInfo.name,
           email: user.email || customerInfo.email,
           phone: user.phone || customerInfo.phone
         },

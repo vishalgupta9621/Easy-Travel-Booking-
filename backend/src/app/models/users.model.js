@@ -49,7 +49,6 @@ const UserSchema = new mongoose.Schema({
     required: false,
     unique: true,
     lowercase: true,
-    index: true,
     match: [
       /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
       "Please enter a valid email address"
@@ -58,9 +57,8 @@ const UserSchema = new mongoose.Schema({
 
   phone: {
     type: String,
-    required: false,
+    required: true,
     unique: true,
-    index: true,
     match: [
       /^[0-9]{10,15}$/,
       "Please enter a valid mobile number (10-15 digits)"
@@ -109,6 +107,17 @@ const UserSchema = new mongoose.Schema({
   is_verified: {
     type: Boolean,
     default: false,
+  },
+
+  // Password reset fields
+  resetPasswordToken: {
+    type: String,
+    default: null,
+  },
+
+  resetPasswordExpires: {
+    type: Date,
+    default: null,
   },
 
   createdAt: {

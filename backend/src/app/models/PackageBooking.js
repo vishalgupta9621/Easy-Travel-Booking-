@@ -123,8 +123,7 @@ const PackageBookingSchema = new mongoose.Schema({
   timestamps: true 
 });
 
-// Indexes for better query performance
-PackageBookingSchema.index({ bookingNumber: 1 });
+// Indexes for better query performance (bookingNumber already has unique index)
 PackageBookingSchema.index({ packageId: 1 });
 PackageBookingSchema.index({ userId: 1 });
 PackageBookingSchema.index({ bookingStatus: 1 });

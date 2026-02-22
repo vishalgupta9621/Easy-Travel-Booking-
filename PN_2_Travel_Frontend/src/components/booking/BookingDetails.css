@@ -35,6 +35,28 @@
   font-size: 2rem;
 }
 
+.demo-notice {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border: 2px solid #ffc107;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+  text-align: center;
+}
+
+.demo-notice h3 {
+  margin: 0 0 10px 0;
+  color: #856404;
+  font-size: 1.3rem;
+}
+
+.demo-notice p {
+  margin: 0;
+  color: #856404;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
 .booking-content {
   display: grid;
   grid-template-columns: 2fr 1fr;

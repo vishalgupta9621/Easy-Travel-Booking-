@@ -216,7 +216,15 @@ export class PackageService {
                     const overallRating = this.calculateOverallRating(hotel, transport);
 
                     packages.push({
+                        _id: `${hotel._id}_${transport.type}_${Date.now()}`,
                         id: `${hotel._id}_${transport.type}_${Date.now()}`,
+                        name: `${hotel.name} Package`,
+                        description: `Complete travel package including ${hotel.nights} nights at ${hotel.name} with ${transport.type} transportation`,
+                        destinations: [hotel.city],
+                        type: this.getPackageType(totalPrice, budget),
+                        basePrice: totalPrice,
+                        price: totalPrice,
+                        images: hotel.photos || [],
                         hotel: {
                             id: hotel._id,
                             name: hotel.name,

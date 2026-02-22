@@ -14,6 +14,12 @@ import packageRoute from "./package.routes.js";
 import bookingRoute from "../app/routes/bookingRoutes.js";
 import paymentRoute from "../app/routes/paymentRoutes.js";
 import dashboardRoute from "../app/routes/dashboardRoutes.js";
+import chatContactRoute from "./chatContact.routes.js";
+import ticketRoute from "../app/routes/ticketRoutes.js";
+import hotelOwnerRegistrationRoute from "./hotelOwnerRegistration.routes.js";
+import hotelOwnerDashboardRoute from "./hotelOwnerDashboard.routes.js";
+import razorpayRoute from "./razorpay.routes.js";
+import chatHistoryRoute from "./chatHistory.routes.js";
 
 const app = express();
 
@@ -46,7 +52,25 @@ app.use("/v1/bookings", bookingRoute);
 // Payment routes
 app.use("/v1/payments", paymentRoute);
 
+// Razorpay routes
+app.use("/v1/razorpay", razorpayRoute);
+
+// Chat history routes
+app.use("/v1/chat-history", chatHistoryRoute);
+
 // Dashboard routes
 app.use("/v1/dashboard", dashboardRoute);
+
+// Chat contact routes
+app.use("/v1/chat-contacts", chatContactRoute);
+
+// Ticket routes
+app.use("/v1/tickets", ticketRoute);
+
+// Hotel Owner Registration routes
+app.use("/v1/hotel-owner-registration", hotelOwnerRegistrationRoute);
+
+// Hotel Owner Dashboard routes
+app.use("/v1/hotel-owner-dashboard", hotelOwnerDashboardRoute);
 
 export default app;

@@ -35,10 +35,12 @@ const Sidebar = () => {
       <div className="center">
         <ul>
           <p className="title">MAIN</p>
+          <Link to="/" style={{ textDecoration: "none" }}>
           <li>
             <DashboardIcon className="icon" />
             <span>Dashboard</span>
           </li>
+          </Link>
           <p className="title">USER MANAGEMENT</p>
           <Link to="/users" style={{ textDecoration: "none" }}>
             <li>
@@ -80,12 +82,12 @@ const Sidebar = () => {
           </Link>
 
           <p className="title">BOOKING MANAGEMENT</p>
-          <Link to="/travel-bookings" style={{ textDecoration: "none" }}>
+          {/* <Link to="/travel-bookings" style={{ textDecoration: "none" }}>
             <li>
               <BookOnlineIcon className="icon" />
               <span>Travel Bookings</span>
             </li>
-          </Link>
+          </Link> */}
           <Link to="/hotel-bookings" style={{ textDecoration: "none" }}>
             <li>
               <HotelIcon className="icon" />
@@ -104,12 +106,7 @@ const Sidebar = () => {
               <span>All Bookings</span>
             </li>
           </Link>
-          <Link to="/bookings" style={{ textDecoration: "none" }}>
-            <li>
-              <ReceiptIcon className="icon" />
-              <span>New Bookings</span>
-            </li>
-          </Link>
+        
         </ul>
       </div>
       <div className="bottom">

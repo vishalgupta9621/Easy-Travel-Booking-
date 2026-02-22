@@ -1,0 +1,204 @@
+.admin-access {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.admin-access-container {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+.admin-access-header {
+  margin-bottom: 30px;
+}
+
+.admin-access-header h2 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 2em;
+  font-weight: 700;
+}
+
+.admin-access-header p {
+  margin: 0;
+  color: #666;
+  font-size: 1.1em;
+}
+
+.admin-form {
+  margin-bottom: 30px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.error-message {
+  background: #ffe6e6;
+  color: #d63031;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  border: 1px solid #fab1a0;
+}
+
+.admin-submit-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.admin-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.admin-info {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.admin-info h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 1.2em;
+  text-align: center;
+}
+
+.admin-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.admin-info li {
+  padding: 8px 0;
+  color: #555;
+  font-size: 14px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.admin-info li:last-child {
+  border-bottom: none;
+}
+
+.demo-credentials {
+  background: #e3f2fd;
+  padding: 15px;
+  border-radius: 10px;
+  border-left: 4px solid #2196f3;
+}
+
+.demo-credentials h4 {
+  margin: 0 0 10px 0;
+  color: #1976d2;
+  font-size: 1em;
+}
+
+.demo-credentials p {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 14px;
+}
+
+.demo-credentials small {
+  color: #666;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.back-link {
+  text-align: center;
+}
+
+.back-btn {
+  background: transparent;
+  color: #667eea;
+  border: 2px solid #667eea;
+  padding: 12px 25px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.back-btn:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .admin-access {
+    padding: 15px;
+  }
+  
+  .admin-access-container {
+    padding: 30px 20px;
+  }
+  
+  .admin-access-header h2 {
+    font-size: 1.6em;
+  }
+  
+  .form-group input {
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  .admin-submit-btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  .admin-info {
+    padding: 20px;
+  }
+}

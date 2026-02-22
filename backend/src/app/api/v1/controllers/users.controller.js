@@ -68,6 +68,74 @@ export class UsersController {
             next(err);
         }
     }
+
+    async forgotPassword(req, res, next) {
+        try {
+            const { email } = req.body;
+
+            if (!email) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email is required'
+                });
+            }
+
+            const result = await usersService.forgotPassword(email);
+            res.status(200).json(result);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    async resetPassword(req, res, next) {
+        try {
+            const { token, email, newPassword, confirmPassword } = req.body;
+
+            if (!token || !email || !newPassword || !confirmPassword) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'All fields are required'
+                });
+            }
+
+            if (newPassword !== confirmPassword) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Passwords do not match'
+                });
+            }
+
+            if (newPassword.length < 6) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Password must be at least 6 characters long'
+                });
+            }
+
+            const result = await usersService.resetPassword(token, email, newPassword);
+            res.status(200).json(result);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    async validateResetToken(req, res, next) {
+        try {
+            const { token, email } = req.query;
+
+            if (!token || !email) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Token and email are required'
+                });
+            }
+
+            const result = await usersService.validateResetToken(token, email);
+            res.status(200).json(result);
+        } catch (err) {
+            next(err);
+        }
+    }
 }
 
 export default new UsersController(); 

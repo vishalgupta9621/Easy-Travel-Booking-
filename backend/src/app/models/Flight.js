@@ -57,7 +57,7 @@ const FlightSchema = new mongoose.Schema({
       basePrice: { type: Number, required: true },
       taxes: { type: Number, default: 0 },
       totalSeats: { type: Number, required: true, default: 150 },
-      availableSeats: { type: Number, default: function() { return this.totalSeats || 150; } }
+      availableSeats: { type: Number, default: 150 }
     },
     business: {
       basePrice: { type: Number },

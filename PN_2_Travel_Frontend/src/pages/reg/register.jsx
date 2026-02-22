@@ -38,8 +38,12 @@ export const Register = () => {
       setValidationError('Password must be at least 6 characters long');
       return false;
     }
-    if (formData.phone && !/^[0-9]{10,15}$/.test(formData.phone)) {
-      setValidationError('Please enter a valid phone number (10-15 digits)');
+    if (!formData.phone || !formData.phone.trim()) {
+      setValidationError('Phone number is required');
+      return false;
+    }
+    if (!/^[0-9]{10,15}$/.test(formData.phone)) {
+      setValidationError('Please enter a valid phone number (10 digits)');
       return false;
     }
     if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email)) {
@@ -125,14 +129,15 @@ export const Register = () => {
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="phone">Phone</label>
+              <label htmlFor="phone">Phone *</label>
               <input
                 type="tel"
                 id="phone"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="Phone number"
+                placeholder="Phone number (10 digits)"
+                required
               />
             </div>
             <div className="form-group">

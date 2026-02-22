@@ -342,32 +342,53 @@ export class PackageController {
 
     async getPackageBookings(req, res, next) {
         try {
-            const { page = 1, limit = 10, status, packageId } = req.query;
+            const { page, limit, status, packageId, userId } = req.query;
 
             const filter = {};
             if (status) filter.bookingStatus = status;
             if (packageId) filter.packageId = packageId;
+            if (userId) filter.userId = userId;
 
-            const bookings = await PackageBooking.find(filter)
-                .populate('packageId', 'name destinations duration')
-                .sort({ createdAt: -1 })
-                .limit(limit * 1)
-                .skip((page - 1) * limit);
+            // If pagination parameters are provided, use them; otherwise return all bookings
+            let bookings;
+            let total;
 
-            const total = await PackageBooking.countDocuments(filter);
+            if (page && limit) {
+                // Paginated response
+                bookings = await PackageBooking.find(filter)
+                    .populate('packageId', 'name destinations duration')
+                    .sort({ createdAt: -1 })
+                    .limit(limit * 1)
+                    .skip((page - 1) * limit);
 
-            res.status(200).json({
-                success: true,
-                data: {
-                    bookings,
-                    pagination: {
-                        page: parseInt(page),
-                        limit: parseInt(limit),
-                        total,
-                        pages: Math.ceil(total / limit)
+                total = await PackageBooking.countDocuments(filter);
+
+                res.status(200).json({
+                    success: true,
+                    data: {
+                        bookings,
+                        pagination: {
+                            page: parseInt(page),
+                            limit: parseInt(limit),
+                            total,
+                            pages: Math.ceil(total / limit)
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                // Return all bookings without pagination
+                bookings = await PackageBooking.find(filter)
+                    .populate('packageId', 'name destinations duration')
+                    .sort({ createdAt: -1 });
+
+                res.status(200).json({
+                    success: true,
+                    data: {
+                        bookings,
+                        total: bookings.length
+                    }
+                });
+            }
 
         } catch (error) {
             console.error('Get package bookings error:', error);
